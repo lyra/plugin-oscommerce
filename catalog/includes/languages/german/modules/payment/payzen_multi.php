@@ -1,10 +1,6 @@
 <?php
 /**
- * PayZen V2-Payment Module version 1.1.3 (revision 66007) for osCommerce 2.3.
- *
- * Copyright (C) 2014-2015 Lyra Network and contributors
- * Support contact : support@payzen.eu
- * Author link : http://www.lyra-network.com/
+ * PayZen V2-Payment Module version 1.1.4 for osCommerce 2.3.x. Support contact : support@payzen.eu.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,29 +18,11 @@
  *
  * @category  payment
  * @package   payzen
- * @author    Lyra Network <supportvad@lyra-network.com>
- * @copyright 2014-2015 Lyra Network and contributors
+ * @author    Lyra Network (http://www.lyra-network.com/)
+ * @copyright 2014-2016 Lyra Network and contributors
  * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html  GNU General Public License (GPL v2)
- * @version   1.1.3 (revision 66007)
-*/
+ */
 
-include_once 'payzen_common.php';
-
-## CATALOG MESSAGES ##
-
-define('MODULE_PAYMENT_PAYZEN_MULTI_TITLE', "PayZen - Ratenzahlung per EC/-Kreditkarte");
+// multi payment catalog messages
+define('MODULE_PAYMENT_PAYZEN_MULTI_TITLE', "PayZen - Ratenzahlung mit EC-/Kreditkarte");
 define('MODULE_PAYMENT_PAYZEN_MULTI_SHORT_TITLE', "PayZen - Ratenzahlung");
-
-## ADMINISTRATION INTERFACE - MULTI PAYMENT SETTINGS ##
-define('MODULE_PAYMENT_PAYZEN_OPTIONS_TITLE', "Zahlungsarten");
-define('MODULE_PAYMENT_PAYZEN_OPTIONS_DESC', "Auf Hinzufügen klicken, um eine oder mehrere Zahlungsarten zu konfigurieren. Für weitere Informationen, Sie bitte der Moduldokumentation. <b>Bitte speichern Sie Ihre Änderungen durch Klicken auf \"Speichern\".</b>");
-define('MODULE_PAYMENT_PAYZEN_OPTIONS_LABEL', "Kennzeichnung");
-define('MODULE_PAYMENT_PAYZEN_OPTIONS_MIN_AMOUNT', "Mindestbetrag");
-define('MODULE_PAYMENT_PAYZEN_OPTIONS_MAX_AMOUNT', "Höchstbetrag");
-define('MODULE_PAYMENT_PAYZEN_OPTIONS_CONTRACT', "Vertrag");
-define('MODULE_PAYMENT_PAYZEN_OPTIONS_COUNT', "Nummer");
-define('MODULE_PAYMENT_PAYZEN_OPTIONS_PERIOD', "Zeitraum");
-define('MODULE_PAYMENT_PAYZEN_OPTIONS_FIRST', "1. Zahlung");
-define('MODULE_PAYMENT_PAYZEN_OPTIONS_ADD', "Hinzufügen");
-define('MODULE_PAYMENT_PAYZEN_OPTIONS_DELETE', "Löschen");
-?>

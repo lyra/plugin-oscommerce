@@ -1,10 +1,6 @@
 <?php
 /**
- * PayZen V2-Payment Module version 1.1.3 (revision 66007) for osCommerce 2.3.
- *
- * Copyright (C) 2014-2015 Lyra Network and contributors
- * Support contact : support@payzen.eu
- * Author link : http://www.lyra-network.com/
+ * PayZen V2-Payment Module version 1.1.4 for osCommerce 2.3.x. Support contact : support@payzen.eu.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,25 +18,28 @@
  *
  * @category  payment
  * @package   payzen
- * @author    Lyra Network <supportvad@lyra-network.com>
- * @copyright 2014-2015 Lyra Network and contributors
+ * @author    Lyra Network (http://www.lyra-network.com/)
+ * @copyright 2014-2016 Lyra Network and contributors
  * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html  GNU General Public License (GPL v2)
- * @version   1.1.3 (revision 66007)
-*/
+ */
 
-/* include BANKNAME API class */
+/* include PayZen API class */
 require_once (DIR_FS_CATALOG . 'includes/classes/payzen_api.php');
 
-/* include the admin configuration functions */
-include_once (DIR_FS_CATALOG . 'admin/includes/functions/payzen_output.php');
+if(defined('DIR_FS_ADMIN')) {
+	/* include the admin configuration functions */
+	require_once (DIR_FS_ADMIN . 'includes/functions/payzen_output.php');
+}
 
 /* load module language file */
-include_once (DIR_FS_CATALOG . "includes/languages/$language/modules/payment/payzen.php");
+require_once (DIR_FS_CATALOG . "includes/languages/$language/modules/payment/payzen.php");
 
 /**
- * Main class implementing PayZen payment module for OSC.
+ * Main class implementing PayZen payment module for osCommerce.
  */
 class payzen {
+	var $prefix = 'MODULE_PAYMENT_PAYZEN_';
+
 	/**
 	 * @var string
 	 */
@@ -71,7 +70,7 @@ class payzen {
 	var $order_status;
 
 	/**
-	 * Class constructor
+	 * Class constructor.
 	 */
 	function payzen() {
 		global $order;
@@ -90,7 +89,7 @@ class payzen {
 		$this->description .= '<table class="infoBoxContent">';
 		$this->description .= '<tr><td style="text-align: right;">' . MODULE_PAYMENT_PAYZEN_DEVELOPED_BY . '</td><td><a href="http://www.lyra-network.com/" target="_blank"><b>Lyra network</b></a></td></tr>';
 		$this->description .= '<tr><td style="text-align: right;">' . MODULE_PAYMENT_PAYZEN_CONTACT_EMAIL . '</td><td><a href="mailto:support@payzen.eu"><b>support@payzen.eu</b></a></td></tr>';
-		$this->description .= '<tr><td style="text-align: right;">' . MODULE_PAYMENT_PAYZEN_CONTRIB_VERSION . '</td><td><b>1.1.3</b></td></tr>';
+		$this->description .= '<tr><td style="text-align: right;">' . MODULE_PAYMENT_PAYZEN_CONTRIB_VERSION . '</td><td><b>1.1.4</b></td></tr>';
 		$this->description .= '<tr><td style="text-align: right;">' . MODULE_PAYMENT_PAYZEN_GATEWAY_VERSION . '</td><td><b>V2</b></td></tr>';
 		$this->description .= '</table>';
 
@@ -99,15 +98,15 @@ class payzen {
 		$this->description .= '<hr />';
 
 		// initialize enabled
-		$this->enabled = (MODULE_PAYMENT_PAYZEN_STATUS == '1');
+		$this->enabled = defined($this->prefix . 'STATUS') && (constant($this->prefix . 'STATUS') == '1');
 
 		// initialize sort_order
-		$this->sort_order = MODULE_PAYMENT_PAYZEN_SORT_ORDER;
+		$this->sort_order = defined($this->prefix . 'SORT_ORDER') ? constant($this->prefix . 'SORT_ORDER') : 0;
 
-		$this->form_action_url = MODULE_PAYMENT_PAYZEN_PLATFORM_URL;
+		$this->form_action_url = defined($this->prefix . 'PLATFORM_URL') ? constant($this->prefix . 'PLATFORM_URL') : '';
 
-		if ((int)MODULE_PAYMENT_PAYZEN_ORDER_STATUS > 0) {
-			$this->order_status = MODULE_PAYMENT_PAYZEN_ORDER_STATUS;
+		if (defined($this->prefix . 'ORDER_STATUS') && (constant($this->prefix . 'ORDER_STATUS') > 0)) {
+			$this->order_status = constant($this->prefix . 'ORDER_STATUS');
 		}
 
 		// if there's an order to treat, start preliminary payment zone check
@@ -117,7 +116,7 @@ class payzen {
 	}
 
 	/**
-	 * Payment zone and amount restriction checks
+	 * Payment zone and amount restriction checks.
 	 */
 	function update_status() {
 		global $order;
@@ -127,10 +126,10 @@ class payzen {
 		}
 
 		// check customer zone
-		if ((int)MODULE_PAYMENT_PAYZEN_ZONE > 0) {
+		if ((int)constant($this->prefix . 'ZONE') > 0) {
 			$flag = false;
 			$check_query = tep_db_query('SELECT `zone_id` FROM `' . TABLE_ZONES_TO_GEO_ZONES . '`' .
-										" WHERE `geo_zone_id` = '" . MODULE_PAYMENT_PAYZEN_ZONE . "'" .
+										" WHERE `geo_zone_id` = '" . constant($this->prefix . 'ZONE') . "'" .
 										" AND `zone_country_id` = '" . $order->billing['country']['id'] . "'" .
 										' ORDER BY `zone_id` ASC');
 			while ($check = tep_db_fetch_array($check_query)) {
@@ -146,23 +145,22 @@ class payzen {
 		}
 
 		// check amount restrictions
-		if ((MODULE_PAYMENT_PAYZEN_AMOUNT_MIN != '' && $order->info['total'] < MODULE_PAYMENT_PAYZEN_AMOUNT_MIN)
-				|| (MODULE_PAYMENT_PAYZEN_AMOUNT_MAX != '' && $order->info['total'] > MODULE_PAYMENT_PAYZEN_AMOUNT_MAX)) {
+		if ((constant($this->prefix . 'AMOUNT_MIN') != '' && $order->info['total'] < constant($this->prefix . 'AMOUNT_MIN'))
+				|| (constant($this->prefix . 'AMOUNT_MAX') != '' && $order->info['total'] > constant($this->prefix . 'AMOUNT_MAX'))) {
 			$this->enabled = false;
 		}
 
 		// check currency
-		$payzenApi = new PayzenApi('UTF-8'); // load PayZen payment API
 
 		$defaultCurrency = (defined('USE_DEFAULT_LANGUAGE_CURRENCY') && USE_DEFAULT_LANGUAGE_CURRENCY == 'true') ? LANGUAGE_CURRENCY : DEFAULT_CURRENCY;
-		if(!$payzenApi->findCurrencyByAlphaCode($order->info['currency']) && !$payzenApi->findCurrencyByAlphaCode($defaultCurrency)) {
+		if(!PayzenApi::findCurrencyByAlphaCode($order->info['currency']) && !PayzenApi::findCurrencyByAlphaCode($defaultCurrency)) {
 			// currency is not supported, module is not available
 			$this->enabled = false;
 		}
 	}
 
 	/**
-	 * JS checks : we let the platform do all the validation itself
+	 * JS checks : we let the platform do all the validation itself.
 	 * @return false
 	 */
 	function javascript_validation() {
@@ -170,7 +168,7 @@ class payzen {
 	}
 
 	/**
-	 * Parameters for what the payment option will look like in the list
+	 * Parameters for what the payment option will look like in the list.
 	 * @return array
 	 */
 	function selection() {
@@ -181,7 +179,7 @@ class payzen {
 	}
 
 	/**
-	 * Server-side checks after payment selection : We let the platform do all the validation itself
+	 * Server-side checks after payment selection : We let the platform do all the validation itself.
 	 * @return false
 	 */
 	function pre_confirmation_check() {
@@ -189,7 +187,7 @@ class payzen {
 	}
 
 	/**
-	 * Server-size checks before payment confirmation :  We let the platform do all the validation itself
+	 * Server-size checks before payment confirmation :  We let the platform do all the validation itself.
 	 * @return false
 	 */
 	function confirmation() {
@@ -197,68 +195,80 @@ class payzen {
 	}
 
 	/**
-	 * Prepare the form that will be sent to the payment gateway
+	 * Prepare the form that will be sent to the payment gateway.
 	 * @return string
 	 */
 	function process_button() {
+		require_once (DIR_FS_CATALOG . 'includes/classes/payzen_request.php');
+		$request = new PayzenRequest(CHARSET);
+
+		$request->setFromArray($this->_build_request());
+
+		return $request->getRequestHtmlFields();
+	}
+
+	function _build_request() {
 		global $order, $languages_id, $currencies, $customer_id;
 
-		// load PayZen payment API
-		$payzenApi = new PayzenApi('UTF-8');
+		require_once (DIR_FS_CATALOG . 'includes/classes/payzen_request.php');
+		$request = new PayzenRequest(CHARSET);
+
+		$data = array();
 
 		// admin configuration parameters
-		$configParams = array(
+		$config_params = array(
 				'site_id', 'key_test', 'key_prod', 'ctx_mode', 'platform_url', 'available_languages',
 				'capture_delay', 'validation_mode', 'payment_cards', 'redirect_enabled',
 				'redirect_success_timeout', 'redirect_success_message', 'redirect_error_timeout',
 				'redirect_error_message', 'return_mode'
 		);
 
-		foreach ($configParams as $name) {
-			$payzenApi->set($name, constant('MODULE_PAYMENT_PAYZEN_' . strtoupper($name)));
+		foreach ($config_params as $name) {
+			$data[$name] = constant($this->prefix . strtoupper($name));
 		}
 
 		// get the shop language code
 		$query = tep_db_query('SELECT `code` FROM `' . TABLE_LANGUAGES . "` WHERE `languages_id` = '$languages_id'");
 		$langData = tep_db_fetch_array($query);
-		$payzenLanguage = $payzenApi->isSupportedLanguage($langData['code']) ?
-					strtolower($langData['code']) :
-					MODULE_PAYMENT_PAYZEN_LANGUAGE;
+		$payzenLanguage = PayzenApi::isSupportedLanguage($langData['code']) ?
+							strtolower($langData['code']) :
+							constant($this->prefix . 'LANGUAGE');
 
 		// get the currency to use
 		$currencyValue = $order->info['currency_value'];
-		$payzenCurrency = $payzenApi->findCurrencyByAlphaCode($order->info['currency']);
+		$payzenCurrency = PayzenApi::findCurrencyByAlphaCode($order->info['currency']);
 		if(!$payzenCurrency) {
 			// currency is not supported, use the default shop currency
 			$defaultCurrency = (defined('USE_DEFAULT_LANGUAGE_CURRENCY') && USE_DEFAULT_LANGUAGE_CURRENCY == 'true') ?
 								LANGUAGE_CURRENCY : DEFAULT_CURRENCY;
 
-			$payzenCurrency = $payzenApi->findCurrencyByAlphaCode($defaultCurrency);
+			$payzenCurrency = PayzenApi::findCurrencyByAlphaCode($defaultCurrency);
 			$currencyValue = 1;
 		}
 
 		// calculate amount ...
-		$total = tep_round($order->info['total'] * $currencyValue, $currencies->get_decimal_places($payzenCurrency->alpha3));
+		$total = tep_round($order->info['total'] * $currencyValue, $currencies->get_decimal_places($payzenCurrency->getAlpha3()));
 
 		// activate 3ds ?
 		$threedsMpi = null;
-		if(MODULE_PAYMENT_PAYZEN_3DS_MIN_AMOUNT != '' && $order->info['total'] < MODULE_PAYMENT_PAYZEN_3DS_MIN_AMOUNT) {
+		if(constant($this->prefix . '3DS_MIN_AMOUNT') != '' && $order->info['total'] < constant($this->prefix . '3DS_MIN_AMOUNT')) {
 			$threedsMpi = '2';
 		}
 
 		// other parameters
-		$data = array(
+		$data += array(
 				// order info
 				'amount' => $payzenCurrency->convertAmountToInteger($total),
 				'order_id' => $this->_guess_order_id(),
-				'contrib' => 'osCommerce2.3_1.1.3/' . tep_get_version() ,
+				'contrib' => 'osCommerce2.3.x_1.1.4/' . tep_get_version() ,
 				'order_info' => 'session_id=' . session_id(),
+				'order_info2' => 'payment_method=' . __CLASS__,
 
 				// misc data
-				'currency' => $payzenCurrency->num,
+				'currency' => $payzenCurrency->getNum(),
 				'language' => $payzenLanguage,
 				'threeds_mpi' => $threedsMpi,
-				'url_return' => tep_href_link(FILENAME_CHECKOUT_PROCESS, '', 'SSL'),
+				'url_return' => HTTP_SERVER . DIR_WS_CATALOG . 'checkout_process_payzen.php',
 
 				// customer info
 				'cust_id' => $customer_id,
@@ -288,33 +298,32 @@ class payzen {
 			}
 			$data['ship_to_country'] = $countryCode;
 
-			//$data['ship_to_country'] = $order->delivery['country']['iso_code_2'];
 			$data['ship_to_zip'] = $order->delivery['postcode'];
 		}
 
-		$payzenApi->setFromArray($data);
-
-		return $payzenApi->getRequestFieldsHtml();
+		return $data;
 	}
 
+
 	/**
-	 * Verify client data after he returned from payment gateway
+	 * Verify client data after he returned from payment gateway.
 	 */
 	function before_process() {
-		global $order, $payzenResponse, $messageStack;
+		global $order, $payzen_response, $messageStack;
 
-		$payzenResponse = new PayzenResponse(
+		require_once (DIR_FS_CATALOG . 'includes/classes/payzen_response.php');
+		$payzen_response = new PayzenResponse(
 				$_REQUEST,
-				MODULE_PAYMENT_PAYZEN_CTX_MODE,
-				MODULE_PAYMENT_PAYZEN_KEY_TEST,
-				MODULE_PAYMENT_PAYZEN_KEY_PROD
+				constant($this->prefix . 'CTX_MODE'),
+				constant($this->prefix . 'KEY_TEST'),
+				constant($this->prefix . 'KEY_PROD')
 		);
-		$fromServer = $payzenResponse->get('hash');
+		$fromServer = $payzen_response->get('hash')!= null;
 
-		// Check authenticity
-		if(!$payzenResponse->isAuthentified()) {
+		// check authenticity
+		if(!$payzen_response->isAuthentified()) {
 			if($fromServer) {
-				die($payzenResponse->getOutputForGateway('auth_fail'));
+				die($payzen_response->getOutputForPlatform('auth_fail'));
 			} else {
 				$messageStack->add_session('header', MODULE_PAYMENT_PAYZEN_TECHNICAL_ERROR, 'error');
 
@@ -324,39 +333,38 @@ class payzen {
 		}
 
 		// messages to display on payment result page
-		if(MODULE_PAYMENT_PAYZEN_CTX_MODE == 'TEST') {
+		if(!$fromServer && constant($this->prefix . 'CTX_MODE') == 'TEST') {
 			$messageStack->add_session('header', MODULE_PAYMENT_PAYZEN_GOING_INTO_PROD_INFO . '<a href="https://secure.payzen.eu/html/faq/prod" target="_blank">https://secure.payzen.eu/html/faq/prod</a>', 'success');
 		}
 
 		// act according to case
-		if($payzenResponse->isAcceptedPayment()) {
+		if($payzen_response->isAcceptedPayment()) {
 			// successful payment
 
 			if($this->_is_order_paid()) {
 				if($fromServer) {
-					die ($payzenResponse->getOutputForGateway('payment_ok_already_done'));
+					die ($payzen_response->getOutputForPlatform('payment_ok_already_done'));
 				} else {
-					$this->_clear_session_vars();
 					tep_redirect(tep_href_link(FILENAME_CHECKOUT_SUCCESS, '', 'SSL', true));
 					die();
 				}
 			} else {
 				// update order payment data
-				$order->info['cc_type'] = $payzenResponse->get('card_brand');
-				$order->info['cc_number'] = $payzenResponse->get('card_number');
-				$order->info['cc_expires'] = str_pad($payzenResponse->get('expiry_month'), 2, '0', STR_PAD_LEFT) . substr($payzenResponse->get('expiry_year'), 2);
+				$order->info['cc_type'] = $payzen_response->get('card_brand');
+				$order->info['cc_number'] = $payzen_response->get('card_number');
+				$order->info['cc_expires'] = str_pad($payzen_response->get('expiry_month'), 2, '0', STR_PAD_LEFT) . substr($payzen_response->get('expiry_year'), 2);
 
 				// let's borrow the cc_owner field to store transaction id
-				$order->info['cc_owner'] = '-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Transaction: ' . $payzenResponse->get('trans_id');
+				$order->info['cc_owner'] = '-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Transaction: ' . $payzen_response->get('trans_id');
 
-				// Let checkout_process.php finish the job
+				// let checkout_process.php finish the job
 				return false;
 			}
 
 		} else {
 			// payment process failed
 			if($fromServer) {
-				die($payzenResponse->getOutputForGateway('payment_ko'));
+				die($payzen_response->getOutputForPlatform('payment_ko'));
 			} else {
 				$messageStack->add_session('header', MODULE_PAYMENT_PAYZEN_PAYMENT_ERROR, 'error');
 				tep_redirect(tep_href_link(FILENAME_CHECKOUT_PAYMENT, '', 'SSL'));
@@ -366,51 +374,52 @@ class payzen {
 	}
 
 	/**
-	 * Post-processing after the order has been finalised
+	 * Post-processing after the order has been finalised.
 	 */
 	function after_process() {
-		global $cart, $payzenResponse, $messageStack;
+		global $cart, $payzen_response, $messageStack;
 
 		// this function is called only when payment was successful and the order is not registered yet
 
-		$fromServer = $payzenResponse->get('hash');
-
-		// reset cart to allow new checkout process
-		$cart->reset(true);
+		$fromServer = $payzen_response->get('hash')!= null;
 
 		if($fromServer) {
-			die ($payzenResponse->getOutputForGateway('payment_ok'));
-		} else {
 			$this->_clear_session_vars();
 
+			die ($payzen_response->getOutputForPlatform('payment_ok'));
+		} else {
 			// payment confirmed by client retun, show a warning if TEST mode
-			if(MODULE_PAYMENT_PAYZEN_CTX_MODE == 'TEST') {
+			if(constant($this->prefix . 'CTX_MODE') == 'TEST') {
 				$messageStack->add_session('header', MODULE_PAYMENT_PAYZEN_CHECK_URL_WARN . '<br />' . MODULE_PAYMENT_PAYZEN_CHECK_URL_WARN_DETAIL, 'warning');
 			}
 
-			tep_redirect(tep_href_link(FILENAME_CHECKOUT_SUCCESS, '', 'SSL'));
-			require(DIR_WS_INCLUDES . 'application_bottom.php');
-			die();
+			return false;
 		}
 	}
 
-	// unregister session variables used during checkout
+	/**
+	 * Unregister session variables used during checkout and clear cart.
+	 */
 	function _clear_session_vars() {
+		global $cart;
 		tep_session_unregister('sendto');
 		tep_session_unregister('billto');
 		tep_session_unregister('shipping');
 		tep_session_unregister('payment');
 		tep_session_unregister('comments');
+
+		// reset cart to allow new checkout process
+		$cart->reset(true);
 	}
 
 	/**
-	 * Return true / 1 if the module is installed
-	 * @return unknown_type
+	 * Return true if the module is installed.
+	 * @return bool
 	 */
 	function check() {
 		if (!isset($this->_check)) {
 			$check_query = tep_db_query('SELECT `configuration_value` FROM `' . TABLE_CONFIGURATION . '`' .
-										" WHERE `configuration_key` = 'MODULE_PAYMENT_PAYZEN_STATUS'");
+										" WHERE `configuration_key` = '" . $this->prefix . "STATUS'");
 			$this->_check = tep_db_num_rows($check_query);
 		}
 		return $this->_check;
@@ -418,8 +427,8 @@ class payzen {
 
 
 	/**
-	 * Build and execute a query for the install() function
-	 * Parameters have to be escaped before
+	 * Build and execute a query for the install() function.
+	 * Parameters have to be escaped before.
 	 *
 	 * @param string $title
 	 * @param string $key
@@ -433,13 +442,11 @@ class payzen {
 	 * @return
 	 */
 	function _install_query($key, $value, $sort_order, $set_function=null, $use_function=null) {
-		$prefix = 'MODULE_PAYMENT_PAYZEN_';
-
 		$sql_data = array(
-				'configuration_title' => constant($prefix . $key . '_TITLE'),
-				'configuration_key' => $prefix . $key,
+				'configuration_title' => constant('MODULE_PAYMENT_PAYZEN_' . $key . '_TITLE'),
+				'configuration_key' => $this->prefix . $key,
 				'configuration_value' => $value,
-				'configuration_description' => constant($prefix . $key . '_DESC'),
+				'configuration_description' => constant('MODULE_PAYMENT_PAYZEN_' . $key . '_DESC'),
 				'configuration_group_id' => '6',
 				'sort_order' => $sort_order,
 				'date_added' => 'now()'
@@ -457,7 +464,7 @@ class payzen {
 	}
 
 	/**
-	 * Module install (register admin-managed parameters in database)
+	 * Module install (register admin-managed parameters in database).
 	 */
 	function install() {
 		// Ex: _install_query($key, $value, $group_id, $sort_order, $set_function=null, $use_function=null)
@@ -495,7 +502,7 @@ class payzen {
 	}
 
 	/**
-	 * Module deletion
+	 * Module deletion.
 	 */
 	function remove() {
 		$keys = $this->keys();
@@ -506,7 +513,7 @@ class payzen {
 	}
 
 	/**
-	 * Returns the names of module's parameters
+	 * Returns the names of module's parameters.
 	 * @return array[int]string
 	 */
 	function keys() {
@@ -544,7 +551,7 @@ class payzen {
 	/**
 	 * Try to guess what will be the order's id when osCommerce will register it at the end of the payment process.
 	 * This is only used to set order_id in the request to the payment gateway. It might be inconsistent with the
-	 * final osCommerce order id (in cases like two clients going to the payment gateway at the same time...)
+	 * final osCommerce order ID (in cases like two clients going to the payment gateway at the same time...)
 	 *
 	 * @return int
 	 */
@@ -560,16 +567,16 @@ class payzen {
 	}
 
 	/**
-	 * Test if order corresponding to entered trans_id is already saved.
+	 * Check if order corresponding to entered trans_id is already saved.
 	 *
 	 * @return boolean true if order already saved
 	 */
 	function _is_order_paid() {
-		global $payzenResponse;
+		global $payzen_response;
 
-		$orderId = $payzenResponse->get('order_id');
-		$customerId = $payzenResponse->get('cust_id');
-		$transId = $payzenResponse->get('trans_id');
+		$orderId = $payzen_response->get('order_id');
+		$customerId = $payzen_response->get('cust_id');
+		$transId = $payzen_response->get('trans_id');
 
 		$query = tep_db_query('SELECT * FROM `' . TABLE_ORDERS . '`' .
 				" WHERE orders_id >= $orderId" .
@@ -579,4 +586,3 @@ class payzen {
 		return tep_db_num_rows($query) > 0;
 	}
 }
-?>

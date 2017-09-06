@@ -1,10 +1,6 @@
 <?php
 /**
- * PayZen V2-Payment Module version 1.1.3 (revision 66007) for osCommerce 2.3.
- *
- * Copyright (C) 2014-2015 Lyra Network and contributors
- * Support contact : support@payzen.eu
- * Author link : http://www.lyra-network.com/
+ * PayZen V2-Payment Module version 1.1.4 for osCommerce 2.3.x. Support contact : support@payzen.eu.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,28 +18,24 @@
  *
  * @category  payment
  * @package   payzen
- * @author    Lyra Network <supportvad@lyra-network.com>
- * @copyright 2014-2015 Lyra Network and contributors
+ * @author    Lyra Network (http://www.lyra-network.com/)
+ * @copyright 2014-2016 Lyra Network and contributors
  * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html  GNU General Public License (GPL v2)
- * @version   1.1.3 (revision 66007)
-*/
+ */
 
-include_once 'payzen_common.php';
-
-## CATALOG MESSAGES ##
-define('MODULE_PAYMENT_PAYZEN_MULTI_TITLE', "PayZen - Credit card installment payment");
-define('MODULE_PAYMENT_PAYZEN_MULTI_SHORT_TITLE', "PayZen - Installment payment");
-
-## ADMINISTRATION INTERFACE - MULTI PAYMENT SETTINGS ##
+// administration interface - multi payment options
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_TITLE', "Payment options");
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_DESC', "Click on \"Add\" to configure one or more payment options. Refer to documentation for more information. <b>Do not forget to click on \"Save\" to save your modifications.</b>");
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_LABEL', "Label");
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_MIN_AMOUNT', "Min amount");
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_MAX_AMOUNT', "Max amount");
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_CONTRACT', "Contract");
-define('MODULE_PAYMENT_PAYZEN_OPTIONS_COUNT', "Installments");
+define('MODULE_PAYMENT_PAYZEN_OPTIONS_COUNT', "Count");
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_PERIOD', "Period");
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_FIRST', "1st payment");
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_ADD', "Add");
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_DELETE', "Delete");
-?>
+
+// multi payment catalog messages
+define('MODULE_PAYMENT_PAYZEN_MULTI_TITLE', "PayZen - Payment in installments by credit card");
+define('MODULE_PAYMENT_PAYZEN_MULTI_SHORT_TITLE', "PayZen - Payment in installments");

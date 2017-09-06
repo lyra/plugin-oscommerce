@@ -1,10 +1,6 @@
 <?php
 /**
- * PayZen V2-Payment Module version 1.1.3 (revision 66007) for osCommerce 2.3.
- *
- * Copyright (C) 2014-2015 Lyra Network and contributors
- * Support contact : support@payzen.eu
- * Author link : http://www.lyra-network.com/
+ * PayZen V2-Payment Module version 1.1.4 for osCommerce 2.3.x. Support contact : support@payzen.eu.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,20 +18,19 @@
  *
  * @category  payment
  * @package   payzen
- * @author    Lyra Network <supportvad@lyra-network.com>
- * @copyright 2014-2015 Lyra Network and contributors
+ * @author    Lyra Network (http://www.lyra-network.com/)
+ * @copyright 2014-2016 Lyra Network and contributors
  * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html  GNU General Public License (GPL v2)
- * @version   1.1.3 (revision 66007)
-*/
+ */
 
 /**
  * General functions to draw PayZen configuration parameters.
- * */
+ */
 
 global $payzen_supported_languages, $payzen_supported_cards;
 
 // load PayZen payment API
-$payzenApi = new PayzenApi('UTF-8');
+$payzenApi = new PayzenApi(CHARSET);
 
 $payzen_supported_languages = $payzenApi->getSupportedLanguages();
 $payzen_supported_cards = $payzenApi->getSupportedCardTypes();
@@ -440,5 +435,3 @@ JSCODE;
 
 	return $field;
 }
-
-?>
