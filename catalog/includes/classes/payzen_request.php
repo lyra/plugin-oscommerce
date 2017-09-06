@@ -1,26 +1,26 @@
 <?php
 /**
- * PayZen V2-Payment Module version 1.1.4 for osCommerce 2.3.x. Support contact : support@payzen.eu.
+ * PayZen V2-Payment Module version 1.2.0 for osCommerce 2.3.x. Support contact : support@payzen.eu.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
+ * @author    Lyra Network (http://www.lyra-network.com/)
+ * @copyright 2014-2017 Lyra Network and contributors
+ * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html  GNU General Public License (GPL v2)
  * @category  payment
  * @package   payzen
- * @author    Lyra Network (http://www.lyra-network.com/)
- * @copyright 2014-2016 Lyra Network and contributors
- * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html  GNU General Public License (GPL v2)
  */
 
 require_once 'payzen_api.php';
@@ -130,6 +130,7 @@ if (! class_exists('PayzenRequest', false)) {
             $regex_mail = '#^[^@]+@[^@]+\.\w{2,4}$#u'; // TODO plus restrictif
             $regex_params = '#^([^&=]+=[^&=]*)?(&[^&=]+=[^&=]*)*$#u'; // name1=value1&name2=value2...
             $regex_ship_type = '#^RECLAIM_IN_SHOP|RELAY_POINT|RECLAIM_IN_STATION|PACKAGE_DELIVERY_COMPANY|ETICKET$#u';
+            $regex_payment_option = '#^[a-zA-Z0-9]{0,32}$|^COUNT=([1-9][0-9]{0,2})?;RATE=[0-9]{0,4}(\\.[0-9]{1,4})?;DESC=.{0,64};?$#';
 
             // defining all parameters and setting formats and default values
             $this->addField('signature', 'Signature', '#^[0-9a-f]{40}$#u', true);
@@ -173,6 +174,7 @@ if (! class_exists('PayzenRequest', false)) {
             $this->addField('vads_page_action', 'Page action', '#^PAYMENT$#u', true, 7);
             $this->addField('vads_payment_cards', 'Payment cards', '#^([A-Za-z0-9\-_]+;)*[A-Za-z0-9\-_]*$#u', false, 127);
             $this->addField('vads_payment_config', 'Payment config', $regex_payment_cfg, true);
+            $this->addField('vads_payment_option_code', 'Payment option to use', $regex_payment_option, false);
             $this->addField('vads_payment_src', 'Payment source', '#^$#u', false, 0);
             $this->addField('vads_redirect_error_message', 'Redirection error message', $ans255, false);
             $this->addField('vads_redirect_error_timeout', 'Redirection error timeout', $ans255, false);
@@ -364,7 +366,6 @@ if (! class_exists('PayzenRequest', false)) {
                 // check parameters
                 if (is_numeric($total_in_cents) && $total_in_cents > $first_in_cents
                     && $total_in_cents > 0 && is_numeric($first_in_cents) && $first_in_cents > 0) {
-
                     // set value to payment_config
                     $payment_config = 'MULTI:first=' . $first_in_cents . ';count=' . $count . ';period=' . $period;
                     $result &= $this->set('amount', $total_in_cents);
