@@ -1,6 +1,6 @@
 <?php
 /**
- * PayZen V2-Payment Module version 1.2.0 for osCommerce 2.3.x. Support contact : support@payzen.eu.
+ * PayZen V2-Payment Module version 1.3.0 for osCommerce 2.3.x. Support contact : support@payzen.eu.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,23 +16,35 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
+ * @category  Payment
+ * @package   Payzen
  * @author    Lyra Network (http://www.lyra-network.com/)
- * @copyright 2014-2017 Lyra Network and contributors
+ * @copyright 2014-2018 Lyra Network and contributors
  * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html  GNU General Public License (GPL v2)
- * @category  payment
- * @package   payzen
  */
 
 /* include PayZen API class */
-require_once (DIR_FS_CATALOG . 'includes/classes/payzen_api.php');
+require_once(DIR_FS_CATALOG . 'includes/classes/payzen_api.php');
 
 if (defined('DIR_FS_ADMIN')) {
     /* include the admin configuration functions */
-    require_once (DIR_FS_ADMIN . 'includes/functions/payzen_output.php');
+    require_once(DIR_FS_ADMIN . 'includes/functions/payzen_output.php');
 }
 
+global $language, $payzen_plugin_features;
+
+$payzen_plugin_features = array(
+    'qualif' => false,
+    'prodfaq' => true,
+    'restrictmulti' => false,
+    'shatwo' => true,
+
+    'multi' => true,
+    'choozeo' => false,
+);
+
 /* load module language file */
-require_once (DIR_FS_CATALOG . "includes/languages/$language/modules/payment/payzen.php");
+require_once(DIR_FS_CATALOG . "includes/languages/$language/modules/payment/payzen.php");
 
 /**
  * Main class implementing PayZen payment module for osCommerce.
@@ -91,12 +103,20 @@ class payzen
         $this->description .= '<table class="infoBoxContent">';
         $this->description .= '<tr><td style="text-align: right;">' . MODULE_PAYMENT_PAYZEN_DEVELOPED_BY . '</td><td><a href="http://www.lyra-network.com/" target="_blank"><b>Lyra network</b></a></td></tr>';
         $this->description .= '<tr><td style="text-align: right;">' . MODULE_PAYMENT_PAYZEN_CONTACT_EMAIL . '</td><td><a href="mailto:support@payzen.eu"><b>support@payzen.eu</b></a></td></tr>';
-        $this->description .= '<tr><td style="text-align: right;">' . MODULE_PAYMENT_PAYZEN_CONTRIB_VERSION . '</td><td><b>1.2.0</b></td></tr>';
+        $this->description .= '<tr><td style="text-align: right;">' . MODULE_PAYMENT_PAYZEN_CONTRIB_VERSION . '</td><td><b>1.3.0</b></td></tr>';
         $this->description .= '<tr><td style="text-align: right;">' . MODULE_PAYMENT_PAYZEN_GATEWAY_VERSION . '</td><td><b>V2</b></td></tr>';
+
+        $this->description .= '<tr style="height: 20px;" colspan="2"><td></td></tr>'; // separator
+        $this->description .= '<tr>
+                                   <td style="text-align: right; vertical-align: top;">' . MODULE_PAYMENT_PAYZEN_IPN_URL_TITLE . '</td>
+                                   <td>
+                                       <b style="word-break: break-word;">' . HTTP_SERVER . DIR_WS_CATALOG . 'checkout_process_payzen.php</b><br />' .
+                                       MODULE_PAYMENT_PAYZEN_IPN_URL_DESC . '
+                                   </td>
+                               </tr>';
+
         $this->description .= '</table>';
 
-        $this->description .= '<br/>';
-        $this->description .= MODULE_PAYMENT_PAYZEN_CHECK_URL . '<b>' . HTTP_SERVER . DIR_WS_CATALOG . 'checkout_process_payzen.php</b>';
         $this->description .= '<hr />';
 
         // initialize enabled
@@ -149,8 +169,8 @@ class payzen
         }
 
         // check amount restrictions
-        if ((constant($this->prefix . 'AMOUNT_MIN') != '' && $order->info['total'] < constant($this->prefix . 'AMOUNT_MIN'))
-                || (constant($this->prefix . 'AMOUNT_MAX') != '' && $order->info['total'] > constant($this->prefix . 'AMOUNT_MAX'))) {
+        if ((constant($this->prefix . 'MIN_AMOUNT') && $order->info['total'] < constant($this->prefix . 'MIN_AMOUNT'))
+                || (constant($this->prefix . 'MAX_AMOUNT') && $order->info['total'] > constant($this->prefix . 'MAX_AMOUNT'))) {
             $this->enabled = false;
             return;
         }
@@ -164,7 +184,7 @@ class payzen
     }
 
     /**
-     * JS checks : we let the platform do all the validation itself.
+     * JS checks : we let the gateway do all the validation itself.
      * @return false
      */
     function javascript_validation()
@@ -185,7 +205,7 @@ class payzen
     }
 
     /**
-     * Server-side checks after payment selection : We let the platform do all the validation itself.
+     * Server-side checks after payment selection : We let the gateway do all the validation itself.
      * @return false
      */
     function pre_confirmation_check()
@@ -194,7 +214,7 @@ class payzen
     }
 
     /**
-     * Server-size checks before payment confirmation :  We let the platform do all the validation itself.
+     * Server-size checks before payment confirmation :  We let the gateway do all the validation itself.
      * @return false
      */
     function confirmation()
@@ -208,7 +228,7 @@ class payzen
      */
     function process_button()
     {
-        require_once (DIR_FS_CATALOG . 'includes/classes/payzen_request.php');
+        require_once(DIR_FS_CATALOG . 'includes/classes/payzen_request.php');
         $request = new PayzenRequest(CHARSET);
 
         $request->setFromArray($this->_build_request());
@@ -220,14 +240,11 @@ class payzen
     {
         global $order, $languages_id, $currencies, $customer_id;
 
-        require_once (DIR_FS_CATALOG . 'includes/classes/payzen_request.php');
-        $request = new PayzenRequest(CHARSET);
-
         $data = array();
 
         // admin configuration parameters
         $config_params = array(
-            'site_id', 'key_test', 'key_prod', 'ctx_mode', 'platform_url', 'available_languages',
+            'site_id', 'key_test', 'key_prod', 'ctx_mode', 'sign_algo', 'platform_url', 'available_languages',
             'capture_delay', 'redirect_enabled','redirect_success_timeout', 'redirect_success_message',
             'redirect_error_timeout', 'redirect_error_message', 'return_mode'
         );
@@ -245,8 +262,7 @@ class payzen
         $query = tep_db_query('SELECT `code` FROM `' . TABLE_LANGUAGES . "` WHERE `languages_id` = '$languages_id'");
         $langData = tep_db_fetch_array($query);
         $payzenLanguage = PayzenApi::isSupportedLanguage($langData['code']) ?
-                            strtolower($langData['code']) :
-                            constant($this->prefix . 'LANGUAGE');
+            strtolower($langData['code']) : constant($this->prefix . 'LANGUAGE');
 
         // get the currency to use
         $currencyValue = $order->info['currency_value'];
@@ -254,7 +270,7 @@ class payzen
         if (! $payzenCurrency) {
             // currency is not supported, use the default shop currency
             $defaultCurrency = (defined('USE_DEFAULT_LANGUAGE_CURRENCY') && USE_DEFAULT_LANGUAGE_CURRENCY == 'true') ?
-                                LANGUAGE_CURRENCY : DEFAULT_CURRENCY;
+                LANGUAGE_CURRENCY : DEFAULT_CURRENCY;
 
             $payzenCurrency = PayzenApi::findCurrencyByAlphaCode($defaultCurrency);
             $currencyValue = 1;
@@ -265,7 +281,7 @@ class payzen
 
         // activate 3ds ?
         $threedsMpi = null;
-        if (constant($this->prefix . '3DS_MIN_AMOUNT') != '' && $order->info['total'] < constant($this->prefix . '3DS_MIN_AMOUNT')) {
+        if (constant($this->prefix . '3DS_MIN_AMOUNT') && ($order->info['total'] < constant($this->prefix . '3DS_MIN_AMOUNT'))) {
             $threedsMpi = '2';
         }
 
@@ -274,7 +290,7 @@ class payzen
             // order info
             'amount' => $payzenCurrency->convertAmountToInteger($total),
             'order_id' => $this->_guess_order_id(),
-            'contrib' => 'osCommerce2.3.x_1.2.0/' . tep_get_version() . '/'. PHP_VERSION,
+            'contrib' => 'osCommerce2.3.x_1.3.0/' . tep_get_version() . '/'. PHP_VERSION,
             'order_info' => 'session_id=' . session_id(),
             'order_info2' => 'payment_method=' .$this->code,
 
@@ -311,6 +327,7 @@ class payzen
             if ($countryCode == 'FX') { // FX not recognized as a country code by PayPal
                 $countryCode = 'FR';
             }
+
             $data['ship_to_country'] = $countryCode;
 
             $data['ship_to_zip'] = $order->delivery['postcode'];
@@ -325,14 +342,15 @@ class payzen
      */
     function before_process()
     {
-        global $order, $payzen_response, $messageStack;
+        global $order, $payzen_response, $messageStack, $payzen_plugin_features;
 
-        require_once (DIR_FS_CATALOG . 'includes/classes/payzen_response.php');
+        require_once(DIR_FS_CATALOG . 'includes/classes/payzen_response.php');
         $payzen_response = new PayzenResponse(
-            $_REQUEST,
+            array_map('stripslashes', $_REQUEST),
             constant($this->prefix . 'CTX_MODE'),
-            constant($this->prefix . 'KEY_TEST'),
-            constant($this->prefix . 'KEY_PROD')
+            @constant($this->prefix . 'KEY_TEST'),
+            constant($this->prefix . 'KEY_PROD'),
+            constant($this->prefix . 'SIGN_ALGO')
         );
         $fromServer = $payzen_response->get('hash')!= null;
 
@@ -349,8 +367,8 @@ class payzen
         }
 
         // messages to display on payment result page
-        if (! $fromServer && constant($this->prefix . 'CTX_MODE') == 'TEST') {
-            $messageStack->add_session('header', MODULE_PAYMENT_PAYZEN_GOING_INTO_PROD_INFO . '<a href="https://secure.payzen.eu/html/faq/prod" target="_blank">https://secure.payzen.eu/html/faq/prod</a>', 'success');
+        if (! $fromServer && $payzen_plugin_features['prodfaq'] && (constant($this->prefix . 'CTX_MODE') == 'TEST')) {
+            $messageStack->add_session('header', MODULE_PAYMENT_PAYZEN_GOING_INTO_PROD_INFO, 'success');
         }
 
         // act according to case
@@ -379,7 +397,6 @@ class payzen
                 // let checkout_process.php finish the job
                 return false;
             }
-
         } else {
             // payment process failed
             if ($fromServer) {
@@ -397,7 +414,7 @@ class payzen
      */
     function after_process()
     {
-        global $cart, $payzen_response, $messageStack;
+        global $payzen_response, $messageStack;
 
         // this function is called only when payment was successful and the order is not registered yet
 
@@ -444,6 +461,7 @@ class payzen
                                         " WHERE `configuration_key` = '" . $this->prefix . "STATUS'");
             $this->_check = tep_db_num_rows($check_query);
         }
+
         return $this->_check;
     }
 
@@ -491,6 +509,8 @@ class payzen
      */
     function install()
     {
+        global $payzen_plugin_features;
+
         // Ex: _install_query($key, $value, $group_id, $sort_order, $set_function=null, $use_function=null)
         // osCommerce specific parameters
         $this->_install_query('STATUS', '1', 1, 'payzen_cfg_draw_pull_down_bools(', 'payzen_get_bool_title');
@@ -499,10 +519,17 @@ class payzen
 
         // gateway access parameters
         $this->_install_query('SITE_ID', '12345678', 10);
-        $this->_install_query('KEY_TEST', '1111111111111111', 11);
+
+        $params = 'array(\'PRODUCTION\')';
+        if (! $payzen_plugin_features['qualif']) {
+            $params = 'array(\'TEST\', \'PRODUCTION\')';
+            $this->_install_query('KEY_TEST', '1111111111111111', 11);
+        }
+
         $this->_install_query('KEY_PROD', '2222222222222222', 12);
-        $this->_install_query('CTX_MODE', 'TEST', 13, "tep_cfg_select_option(array(\'TEST\', \'PRODUCTION\'),");
-        $this->_install_query('PLATFORM_URL', 'https://secure.payzen.eu/vads-payment/', 14);
+        $this->_install_query('CTX_MODE', 'TEST', 13, "tep_cfg_select_option($params,");
+        $this->_install_query('SIGN_ALGO', 'SHA-256', 14, 'payzen_cfg_draw_pull_down_sign_algos(', 'payzen_get_sign_algo_title');
+        $this->_install_query('PLATFORM_URL', 'https://secure.payzen.eu/vads-payment/', 15);
 
         $this->_install_query('LANGUAGE', 'fr', 21, 'payzen_cfg_draw_pull_down_langs(', 'payzen_get_lang_title');
         $this->_install_query('AVAILABLE_LANGUAGES', '', 22, 'payzen_cfg_draw_pull_down_multi_langs(', 'payzen_get_multi_lang_title');
@@ -514,16 +541,16 @@ class payzen
             $this->_install_query('PAYMENT_CARDS', '', 25, 'payzen_cfg_draw_pull_down_cards(', 'payzen_get_card_title');
 
             // amount restriction
-            $this->_install_query('AMOUNT_MIN', '', 30);
-            $this->_install_query('AMOUNT_MAX', '', 31);
+            $this->_install_query('MIN_AMOUNT', '', 30);
+            $this->_install_query('MAX_AMOUNT', '', 31);
         }
 
         // gateway return parameters
         $this->_install_query('REDIRECT_ENABLED', '0', 40, 'payzen_cfg_draw_pull_down_bools(', 'payzen_get_bool_title');
         $this->_install_query('REDIRECT_SUCCESS_TIMEOUT', '5', 41);
-        $this->_install_query('REDIRECT_SUCCESS_MESSAGE', 'Redirection vers la boutique dans quelques instants...', 42);
+        $this->_install_query('REDIRECT_SUCCESS_MESSAGE', 'Redirection to shop in a few seconds...', 42);
         $this->_install_query('REDIRECT_ERROR_TIMEOUT', '5', 43);
-        $this->_install_query('REDIRECT_ERROR_MESSAGE', 'Redirection vers la boutique dans quelques instants...', 44);
+        $this->_install_query('REDIRECT_ERROR_MESSAGE', 'Redirection to shop in a few seconds...', 44);
         $this->_install_query('RETURN_MODE', 'GET', 45, "tep_cfg_select_option(array(\'GET\', \'POST\'), ");
         $this->_install_query('ORDER_STATUS', '0', 48, 'tep_cfg_pull_down_order_statuses(', 'tep_get_order_status_name');
     }
@@ -546,35 +573,44 @@ class payzen
      */
     function keys()
     {
-        return array(
-            'MODULE_PAYMENT_PAYZEN_STATUS',
-            'MODULE_PAYMENT_PAYZEN_SORT_ORDER',
-            'MODULE_PAYMENT_PAYZEN_ZONE',
+        global $payzen_plugin_features;
 
-            'MODULE_PAYMENT_PAYZEN_SITE_ID',
-            'MODULE_PAYMENT_PAYZEN_KEY_TEST',
-            'MODULE_PAYMENT_PAYZEN_KEY_PROD',
-            'MODULE_PAYMENT_PAYZEN_CTX_MODE',
-            'MODULE_PAYMENT_PAYZEN_PLATFORM_URL',
+        $keys = array();
 
-            'MODULE_PAYMENT_PAYZEN_LANGUAGE',
-            'MODULE_PAYMENT_PAYZEN_AVAILABLE_LANGUAGES',
-            'MODULE_PAYMENT_PAYZEN_CAPTURE_DELAY',
-            'MODULE_PAYMENT_PAYZEN_VALIDATION_MODE',
-            'MODULE_PAYMENT_PAYZEN_PAYMENT_CARDS',
-            'MODULE_PAYMENT_PAYZEN_3DS_MIN_AMOUNT',
+        $keys[] = 'MODULE_PAYMENT_PAYZEN_STATUS';
+        $keys[] = 'MODULE_PAYMENT_PAYZEN_SORT_ORDER';
+        $keys[] = 'MODULE_PAYMENT_PAYZEN_ZONE';
 
-            'MODULE_PAYMENT_PAYZEN_AMOUNT_MIN',
-            'MODULE_PAYMENT_PAYZEN_AMOUNT_MAX',
+        $keys[] = 'MODULE_PAYMENT_PAYZEN_SITE_ID';
 
-            'MODULE_PAYMENT_PAYZEN_REDIRECT_ENABLED',
-            'MODULE_PAYMENT_PAYZEN_REDIRECT_SUCCESS_TIMEOUT',
-            'MODULE_PAYMENT_PAYZEN_REDIRECT_SUCCESS_MESSAGE',
-            'MODULE_PAYMENT_PAYZEN_REDIRECT_ERROR_TIMEOUT',
-            'MODULE_PAYMENT_PAYZEN_REDIRECT_ERROR_MESSAGE',
-            'MODULE_PAYMENT_PAYZEN_RETURN_MODE',
-            'MODULE_PAYMENT_PAYZEN_ORDER_STATUS'
-        );
+        if (! $payzen_plugin_features['qualif']) {
+            $keys[] = 'MODULE_PAYMENT_PAYZEN_KEY_TEST';
+        }
+
+        $keys[] = 'MODULE_PAYMENT_PAYZEN_KEY_PROD';
+        $keys[] = 'MODULE_PAYMENT_PAYZEN_CTX_MODE';
+        $keys[] = 'MODULE_PAYMENT_PAYZEN_SIGN_ALGO';
+        $keys[] = 'MODULE_PAYMENT_PAYZEN_PLATFORM_URL';
+
+        $keys[] = 'MODULE_PAYMENT_PAYZEN_LANGUAGE';
+        $keys[] = 'MODULE_PAYMENT_PAYZEN_AVAILABLE_LANGUAGES';
+        $keys[] = 'MODULE_PAYMENT_PAYZEN_CAPTURE_DELAY';
+        $keys[] = 'MODULE_PAYMENT_PAYZEN_VALIDATION_MODE';
+        $keys[] = 'MODULE_PAYMENT_PAYZEN_PAYMENT_CARDS';
+        $keys[] = 'MODULE_PAYMENT_PAYZEN_3DS_MIN_AMOUNT';
+
+        $keys[] = 'MODULE_PAYMENT_PAYZEN_MIN_AMOUNT';
+        $keys[] = 'MODULE_PAYMENT_PAYZEN_MAX_AMOUNT';
+
+        $keys[] = 'MODULE_PAYMENT_PAYZEN_REDIRECT_ENABLED';
+        $keys[] = 'MODULE_PAYMENT_PAYZEN_REDIRECT_SUCCESS_TIMEOUT';
+        $keys[] = 'MODULE_PAYMENT_PAYZEN_REDIRECT_SUCCESS_MESSAGE';
+        $keys[] = 'MODULE_PAYMENT_PAYZEN_REDIRECT_ERROR_TIMEOUT';
+        $keys[] = 'MODULE_PAYMENT_PAYZEN_REDIRECT_ERROR_MESSAGE';
+        $keys[] = 'MODULE_PAYMENT_PAYZEN_RETURN_MODE';
+        $keys[] = 'MODULE_PAYMENT_PAYZEN_ORDER_STATUS';
+
+        return $keys;
     }
 
     /**

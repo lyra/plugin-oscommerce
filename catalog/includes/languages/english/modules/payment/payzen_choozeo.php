@@ -23,21 +23,18 @@
  * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html  GNU General Public License (GPL v2)
  */
 
-// administration interface - multi payment options
+// administration interface - amount restriction error message
+define('MODULE_PAYMENT_PAYZEN_NULL_MIN_AMOUNT_ERROR', "The field « Minimum amount » is mandatory.");
+define('MODULE_PAYMENT_PAYZEN_NULL_MAX_AMOUNT_ERROR', "The field « Maximum amount » is mandatory.");
+define('MODULE_PAYMENT_PAYZEN_INCONSISTENT_AMOUNT_ERROR', "« Minimum amount » must be inferior to « Maximum amount ».");
+define('MODULE_PAYMENT_PAYZEN_CHOOZEO_OPTIONS_ERROR', "Min and max amounts must fall within the interval defined by fields « Minimum amount » and « Maximum amount ».");
+
+// administration interface - choozeo payment options
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_TITLE', "Payment options");
-define('MODULE_PAYMENT_PAYZEN_OPTIONS_DESC', "Click on « Add » to configure one or more payment options. Refer to documentation for more information. <b>Do not forget to click on « Save » to save your modifications.</b>");
+define('MODULE_PAYMENT_PAYZEN_OPTIONS_DESC', "Configure Choozeo payment options");
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_LABEL', "Label");
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_MIN_AMOUNT', "Min amount");
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_MAX_AMOUNT', "Max amount");
-define('MODULE_PAYMENT_PAYZEN_OPTIONS_CONTRACT', "Contract");
-define('MODULE_PAYMENT_PAYZEN_OPTIONS_COUNT', "Count");
-define('MODULE_PAYMENT_PAYZEN_OPTIONS_PERIOD', "Period");
-define('MODULE_PAYMENT_PAYZEN_OPTIONS_FIRST', "1st payment");
-define('MODULE_PAYMENT_PAYZEN_OPTIONS_ADD', "Add");
-define('MODULE_PAYMENT_PAYZEN_OPTIONS_DELETE', "Delete");
 
-// multi payment catalog messages
-define('MODULE_PAYMENT_PAYZEN_MULTI_TITLE', "PayZen - Payment in installments by credit card");
-define('MODULE_PAYMENT_PAYZEN_MULTI_SHORT_TITLE', "PayZen - Payment in installments");
-
-define('MODULE_PAYMENT_PAYZEN_MULTI_WARNING', "ATTENTION: The payment in installments feature activation is subject to the prior agreement of Société Générale.<br />If you enable this feature while you have not the associated option, an error 07 - PAYMENT_CONFIG will occur and the buyer will not be able to pay.");
+// choozeo payment catalog messages
+define('MODULE_PAYMENT_PAYZEN_CHOOZEO_TITLE', "PayZen - Payment with Choozeo");
