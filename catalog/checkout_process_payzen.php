@@ -1,6 +1,6 @@
 <?php
 /**
- * PayZen V2-Payment Module version 1.2.0 for osCommerce 2.3.x. Support contact : support@payzen.eu.
+ * PayZen V2-Payment Module version 1.3.0 for osCommerce 2.3.x. Support contact : support@payzen.eu.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,11 +16,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
+ * @category  Payment
+ * @package   Payzen
  * @author    Lyra Network (http://www.lyra-network.com/)
- * @copyright 2014-2017 Lyra Network and contributors
+ * @copyright 2014-2018 Lyra Network and contributors
  * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html  GNU General Public License (GPL v2)
- * @category  payment
- * @package   payzen
  */
 
 /**
@@ -38,7 +38,7 @@ if (key_exists('vads_hash', $_POST) && isset($_POST['vads_hash']) && key_exists(
     $_COOKIE['osCsid'] = $osCsid;
     $_COOKIE['cookie_test'] = 'please_accept_for_session';
 
-    require_once 'checkout_process.php';
+    require_once('checkout_process.php');
 } else {
     require_once('includes/application_top.php');
 
@@ -48,34 +48,35 @@ if (key_exists('vads_hash', $_POST) && isset($_POST['vads_hash']) && key_exists(
 
     switch ($paymentMethod) {
         case 'payzen':
-            require_once (DIR_FS_CATALOG . 'includes/modules/payment/payzen.php');
+            require_once(DIR_FS_CATALOG . 'includes/modules/payment/payzen.php');
             $paymentObject = new payzen();
             break;
 
         case 'payzen_multi':
-            require_once (DIR_FS_CATALOG . 'includes/modules/payment/payzen_multi.php');
+            require_once(DIR_FS_CATALOG . 'includes/modules/payment/payzen_multi.php');
             $paymentObject = new payzen_multi();
             break;
 
         case 'payzen_choozeo':
-            require_once (DIR_FS_CATALOG . 'includes/modules/payment/payzen_choozeo.php');
+            require_once(DIR_FS_CATALOG . 'includes/modules/payment/payzen_choozeo.php');
             $paymentObject = new payzen_choozeo();
             break;
 
         default:
-            require_once (DIR_FS_CATALOG . "includes/languages/$language/modules/payment/payzen.php");
+            require_once(DIR_FS_CATALOG . "includes/languages/$language/modules/payment/payzen.php");
             $messageStack->add_session('header', MODULE_PAYMENT_PAYZEN_TECHNICAL_ERROR, 'error');
 
             tep_redirect(tep_href_link(FILENAME_CHECKOUT_PAYMENT, '', 'SSL', true));
             break;
     }
 
-    require_once (DIR_FS_CATALOG . 'includes/classes/payzen_response.php');
+    require_once(DIR_FS_CATALOG . 'includes/classes/payzen_response.php');
     $payzen_response = new PayzenResponse(
-            $_REQUEST,
-            constant($paymentObject->prefix . 'CTX_MODE'),
-            constant($paymentObject->prefix . 'KEY_TEST'),
-            constant($paymentObject->prefix . 'KEY_PROD')
+        array_map('stripslashes', $_REQUEST),
+        constant($paymentObject->prefix . 'CTX_MODE'),
+        @constant($paymentObject->prefix . 'KEY_TEST'),
+        constant($paymentObject->prefix . 'KEY_PROD'),
+        constant($paymentObject->prefix . 'SIGN_ALGO')
     );
 
     $from_server = $payzen_response->get('hash') != null;
@@ -88,9 +89,11 @@ if (key_exists('vads_hash', $_POST) && isset($_POST['vads_hash']) && key_exists(
     }
 
     if ($paymentObject->_is_order_paid()) {
+        global $payzen_plugin_features;
+
         // messages to display on payment result page
-        if (constant($paymentObject->prefix . 'CTX_MODE') == 'TEST') {
-            $messageStack->add_session('header', MODULE_PAYMENT_PAYZEN_GOING_INTO_PROD_INFO . '<a href="https://secure.payzen.eu/html/faq/prod" target="_blank">https://secure.payzen.eu/html/faq/prod</a>', 'success');
+        if ($payzen_plugin_features['prodfaq'] && (constant($paymentObject->prefix . 'CTX_MODE') == 'TEST')) {
+            $messageStack->add_session('header', MODULE_PAYMENT_PAYZEN_GOING_INTO_PROD_INFO, 'success');
         }
 
         tep_redirect(tep_href_link(FILENAME_CHECKOUT_SUCCESS, '', 'SSL', true));

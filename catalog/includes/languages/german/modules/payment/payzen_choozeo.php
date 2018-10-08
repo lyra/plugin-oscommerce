@@ -23,21 +23,18 @@
  * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html  GNU General Public License (GPL v2)
  */
 
-// administration interface - multi payment settings
-define('MODULE_PAYMENT_PAYZEN_OPTIONS_TITLE', "Zahlungsarten");
-define('MODULE_PAYMENT_PAYZEN_OPTIONS_DESC', "Auf « Hinzufügen » klicken, um eine oder mehrere Zahlungsarten zu konfigurieren. Für weitere Informationen, Sie bitte der Moduldokumentation. <b>Bitte speichern Sie Ihre Änderungen durch Klicken auf « Speichern ».</b>");
+// administration interface - amount restriction error message
+define('MODULE_PAYMENT_PAYZEN_NULL_MIN_AMOUNT_ERROR', "Das Feld « Mindestbetrag » ist Pflicht.");
+define('MODULE_PAYMENT_PAYZEN_NULL_MAX_AMOUNT_ERROR', "Das Feld « Höchstbetrag » ist Pflicht.");
+define('MODULE_PAYMENT_PAYZEN_INCONSISTENT_AMOUNT_ERROR', "« Mindestbetrag » muss unter « Höchstbetrag » liegen.");
+define('MODULE_PAYMENT_PAYZEN_CHOOZEO_OPTIONS_ERROR', "Min and max amounts must fall within the interval defined by fields « Minimum amount » and « Maximum amount ».");
+
+// administration interface - choozeo payment options
+define('MODULE_PAYMENT_PAYZEN_OPTIONS_TITLE', "Zahlungsoptionen");
+define('MODULE_PAYMENT_PAYZEN_OPTIONS_DESC', "Konfigurieren Choozeo Zahlungsoptionen");
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_LABEL', "Kennzeichnung");
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_MIN_AMOUNT', "Mindestbetrag");
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_MAX_AMOUNT', "Höchstbetrag");
-define('MODULE_PAYMENT_PAYZEN_OPTIONS_CONTRACT', "Vertrag");
-define('MODULE_PAYMENT_PAYZEN_OPTIONS_COUNT', "Nummer");
-define('MODULE_PAYMENT_PAYZEN_OPTIONS_PERIOD', "Zeitraum");
-define('MODULE_PAYMENT_PAYZEN_OPTIONS_FIRST', "1. Zahlung");
-define('MODULE_PAYMENT_PAYZEN_OPTIONS_ADD', "Hinzufügen");
-define('MODULE_PAYMENT_PAYZEN_OPTIONS_DELETE', "Löschen");
 
 // multi payment catalog messages
-define('MODULE_PAYMENT_PAYZEN_MULTI_TITLE', "PayZen - Ratenzahlung mit EC-/Kreditkarte");
-define('MODULE_PAYMENT_PAYZEN_MULTI_SHORT_TITLE', "PayZen - Ratenzahlung");
-
-define('MODULE_PAYMENT_PAYZEN_MULTI_WARNING', "ATTENTION: The payment in installments feature activation is subject to the prior agreement of Société Générale.<br />If you enable this feature while you have not the associated option, an error 07 - PAYMENT_CONFIG will occur and the buyer will not be able to pay.");
+define('MODULE_PAYMENT_PAYZEN_CHOOZEO_TITLE', "PayZen - Zahlung mit Choozeo");

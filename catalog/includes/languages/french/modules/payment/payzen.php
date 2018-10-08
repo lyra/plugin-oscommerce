@@ -1,6 +1,6 @@
 <?php
 /**
- * PayZen V2-Payment Module version 1.2.0 for osCommerce 2.3.x. Support contact : support@payzen.eu.
+ * PayZen V2-Payment Module version 1.3.0 for osCommerce 2.3.x. Support contact : support@payzen.eu.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,12 +16,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
+ * @category  Payment
+ * @package   Payzen
  * @author    Lyra Network (http://www.lyra-network.com/)
- * @copyright 2014-2017 Lyra Network and contributors
+ * @copyright 2014-2018 Lyra Network and contributors
  * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html  GNU General Public License (GPL v2)
- * @category  payment
- * @package   payzen
  */
+
+global $payzen_plugin_features;
 
 // administration interface - informations
 define('MODULE_PAYMENT_PAYZEN_MODULE_INFORMATION', "INFORMATIONS SUR LE MODULE");
@@ -29,7 +31,8 @@ define('MODULE_PAYMENT_PAYZEN_DEVELOPED_BY', "Développé par : ");
 define('MODULE_PAYMENT_PAYZEN_CONTACT_EMAIL', "Courriel de contact : ");
 define('MODULE_PAYMENT_PAYZEN_CONTRIB_VERSION', "Version du module : ");
 define('MODULE_PAYMENT_PAYZEN_GATEWAY_VERSION', "Version de la plateforme : ");
-define('MODULE_PAYMENT_PAYZEN_CHECK_URL', "URL de notification à copier dans le Back Office PayZen: <br />");
+define('MODULE_PAYMENT_PAYZEN_IPN_URL_TITLE', "URL de notification");
+define('MODULE_PAYMENT_PAYZEN_IPN_URL_DESC', "URL à copier dans le Back Office PayZen > Paramétrage > Règles de notifications.");
 
 // administration interface - module settings
 define('MODULE_PAYMENT_PAYZEN_STATUS_TITLE', "Activation");
@@ -39,7 +42,7 @@ define('MODULE_PAYMENT_PAYZEN_SORT_ORDER_DESC', "Le plus petit indice est affich
 define('MODULE_PAYMENT_PAYZEN_ZONE_TITLE', "Zone de paiement");
 define('MODULE_PAYMENT_PAYZEN_ZONE_DESC', "Si une zone est choisie, ce mode de paiement ne sera effectif que pour celle-ci.");
 
-// administration interface - platform settings
+// administration interface - gateway settings
 define('MODULE_PAYMENT_PAYZEN_SITE_ID_TITLE', "Identifiant boutique");
 define('MODULE_PAYMENT_PAYZEN_SITE_ID_DESC', "Identifiant fourni par PayZen.");
 define('MODULE_PAYMENT_PAYZEN_KEY_TEST_TITLE', "Certificat en mode test");
@@ -48,6 +51,8 @@ define('MODULE_PAYMENT_PAYZEN_KEY_PROD_TITLE', "Certificat en mode production");
 define('MODULE_PAYMENT_PAYZEN_KEY_PROD_DESC', "Certificat fourni par PayZen (disponible sur le Back Office de votre boutique après passage en production).");
 define('MODULE_PAYMENT_PAYZEN_CTX_MODE_TITLE', "Mode");
 define('MODULE_PAYMENT_PAYZEN_CTX_MODE_DESC', "Mode de fonctionnement du module.");
+define('MODULE_PAYMENT_PAYZEN_SIGN_ALGO_TITLE', "Algorithme de signature");
+define('MODULE_PAYMENT_PAYZEN_SIGN_ALGO_DESC', "Algorithme utilisé pour calculer la signature du formulaire de paiement. L'algorithme sélectionné doit être le même que celui configuré sur le Back Office PayZen." . (! $payzen_plugin_features['shwatwo'] ? "Le HMAC-SHA-256 ne doit pas être activé si celui-ci n'est pas encore disponible depuis le Back Office PayZen." : ''));
 define('MODULE_PAYMENT_PAYZEN_PLATFORM_URL_TITLE', "URL de la page de paiement");
 define('MODULE_PAYMENT_PAYZEN_PLATFORM_URL_DESC', "URL vers laquelle l'acheteur sera redirigé pour le paiement.");
 
@@ -62,14 +67,14 @@ define('MODULE_PAYMENT_PAYZEN_VALIDATION_MODE_TITLE', "Mode de validation");
 define('MODULE_PAYMENT_PAYZEN_VALIDATION_MODE_DESC', "En mode manuel, vous devrez confirmer les paiements dans le Back Office de votre boutique.");
 define('MODULE_PAYMENT_PAYZEN_PAYMENT_CARDS_TITLE', "Types de carte");
 define('MODULE_PAYMENT_PAYZEN_PAYMENT_CARDS_DESC', "Le(s) type(s) de carte pouvant être utilisé(s) pour le paiement. Ne rien sélectionner pour utiliser la configuration de la plateforme.");
-define('MODULE_PAYMENT_PAYZEN_3DS_MIN_AMOUNT_TITLE', "Montant minimum pour lequel activer 3-DS");
-define('MODULE_PAYMENT_PAYZEN_3DS_MIN_AMOUNT_DESC', "Nécessite la souscription à l'option 3-D Secure sélectif.");
+define('MODULE_PAYMENT_PAYZEN_3DS_MIN_AMOUNT_TITLE', "Désactiver 3DS");
+define('MODULE_PAYMENT_PAYZEN_3DS_MIN_AMOUNT_DESC', "Montant en dessous duquel 3DS sera désactivé. Nécessite la souscription à l\'option 3DS sélectif. Pour plus d\'informations, reportez-vous à la documentation du module.");
 
 // administration interface - amount restrictions settings
-define('MODULE_PAYMENT_PAYZEN_AMOUNT_MIN_TITLE', "Montant minimum");
-define('MODULE_PAYMENT_PAYZEN_AMOUNT_MIN_DESC', "Montant minimum pour lequel cette méthode de paiement est disponible.");
-define('MODULE_PAYMENT_PAYZEN_AMOUNT_MAX_TITLE', "Montant maximum");
-define('MODULE_PAYMENT_PAYZEN_AMOUNT_MAX_DESC', "Montant maximum pour lequel cette méthode de paiement est disponible.");
+define('MODULE_PAYMENT_PAYZEN_MIN_AMOUNT_TITLE', "Montant minimum");
+define('MODULE_PAYMENT_PAYZEN_MIN_AMOUNT_DESC', "Montant minimum pour lequel cette méthode de paiement est disponible.");
+define('MODULE_PAYMENT_PAYZEN_MAX_AMOUNT_TITLE', "Montant maximum");
+define('MODULE_PAYMENT_PAYZEN_MAX_AMOUNT_DESC', "Montant maximum pour lequel cette méthode de paiement est disponible.");
 
 // administration interface - back to store settings
 define('MODULE_PAYMENT_PAYZEN_REDIRECT_ENABLED_TITLE', "Redirection automatique");
@@ -111,10 +116,10 @@ define('MODULE_PAYMENT_PAYZEN_LANGUAGE_TURKISH', "Turc");
 
 // catalog messages
 define('MODULE_PAYMENT_PAYZEN_TECHNICAL_ERROR', "Une erreur est survenue dans le processus de paiement.");
-define('MODULE_PAYMENT_PAYZEN_PAYMENT_ERROR', "Votre commande n'a pas pu être confirmée. Le paiement n'a pas été accepté.");
+define('MODULE_PAYMENT_PAYZEN_PAYMENT_ERROR', "Votre paiement n'a pas été accepté. Veuillez repasser votre commande.");
 define('MODULE_PAYMENT_PAYZEN_CHECK_URL_WARN', "La validation automatique n'a pas fonctionné. Avez-vous configuré correctement l'URL de notification dans le Back Office PayZen ?");
-define('MODULE_PAYMENT_PAYZEN_CHECK_URL_WARN_DETAIL', "Afin de comprendre la problématique, reportez vous à la documentation du module :<br />&nbsp;&nbsp;&nbsp;- Chapitre «A lire attentivement avant d'aller loin»<br />&nbsp;&nbsp;&nbsp;- Chapitre «Paramétrage de l'URL de notification».");
-define('MODULE_PAYMENT_PAYZEN_GOING_INTO_PROD_INFO', "<b>PASSAGE EN PRODUCTION :</b> Vous souhaitez savoir comment passer votre boutique en production, merci de consulter cette URL : ");
+define('MODULE_PAYMENT_PAYZEN_CHECK_URL_WARN_DETAIL', "Afin de comprendre la problématique, reportez vous à la documentation du module :<br />&nbsp;&nbsp;&nbsp;- Chapitre « A lire attentivement avant d'aller loin »<br />&nbsp;&nbsp;&nbsp;- Chapitre « Paramétrage de l'URL de notification ».");
+define('MODULE_PAYMENT_PAYZEN_GOING_INTO_PROD_INFO', "<b>PASSAGE EN PRODUCTION :</b> Vous souhaitez savoir comment passer votre boutique en production, merci de consulter les chapitres « Procéder à la phase des tests » et « Passage d'une boutique en mode production » de la documentation du module.");
 
 // single payment catalog messages
 define('MODULE_PAYMENT_PAYZEN_STD_TITLE', "PayZen - Paiement par carte bancaire");

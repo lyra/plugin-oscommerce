@@ -1,11 +1,19 @@
+1.3.0, 2018-10-15:
+- Bug fix: signature error with quote in return data.
+- Enable signature algorithm selection (SHA-1 or HMAC-SHA-256).
+- Improve some plugin translations.
+- [prodfaq]Fix notice about shifting the shop to production mode.
+- [technical]Manage enabled/disabled features by plugin variant.
+
 1.2.0, 2017-09-05:
+- [systempay]Adding Choozeo sub-module.
 - Send cellular phone number in payment form.
 - Improve module translations.
 
 1.1.4, 2017-01-16:
 - Correction of a problem relative to cart empty after a sucessful payment.
 - Refactoring of API code.
-- Remove control over certificate format modified on the platform.
+- Remove control over certificate format modified on the gateway.
 
 1.1.3, 2015-03-09:
 - Bug fix: relative to MySQLi PHP extension.

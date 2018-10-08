@@ -1,6 +1,6 @@
 <?php
 /**
-  * PayZen V2-Payment Module version 1.2.0 for osCommerce 2.3.x. Support contact : support@payzen.eu.
+  * PayZen V2-Payment Module version 1.3.0 for osCommerce 2.3.x. Support contact : support@payzen.eu.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,11 +16,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
+ * @category  Payment
+ * @package   Payzen
  * @author    Lyra Network (http://www.lyra-network.com/)
- * @copyright 2014-2017 Lyra Network and contributors
+ * @copyright 2014-2018 Lyra Network and contributors
  * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html  GNU General Public License (GPL v2)
- * @category  payment
- * @package   payzen
  */
 
 /**
@@ -43,6 +43,16 @@ function payzen_get_bool_title($value)
     } else {
         return $value;
     }
+}
+
+function payzen_get_sign_algo_title($value)
+{
+    $algos = array(
+        'SHA-1' => 'SHA-1',
+        'SHA-256' => 'HMAC-SHA-256'
+    );
+
+    return $algos[$value];
 }
 
 function payzen_get_lang_title($value)
@@ -126,7 +136,7 @@ function payzen_get_multi_options($value)
     $field .= '</tr></thead>';
 
     $field .= '<tbody>';
-    foreach ($options as $code => $option) {
+    foreach ($options as $option) {
         $field .= '<tr>';
         $field .= '<td style="padding: 0px;">' . $option['label'] . '</td>';
         $field .= '<td style="padding: 0px;">' . $option['min_amount'] . '</td>';
@@ -201,6 +211,34 @@ function payzen_cfg_draw_pull_down_bools($value='', $name)
     return $field;
 }
 
+function payzen_cfg_draw_pull_down_sign_algos($value='', $name)
+{
+    $name = 'configuration[' . tep_output_string($name) . ']';
+
+    if (empty($value) && isset($GLOBALS[$name])) {
+        $value = stripslashes($GLOBALS[$name]);
+    }
+
+    $algos = array(
+        'SHA-1' => 'SHA-1',
+        'SHA-256' => 'HMAC-SHA-256'
+    );
+
+    $field = '<select name="' . $name . '">';
+    foreach ($algos as $code => $algo) {
+        $field .= '<option value="' . $code . '"';
+        if ($value == $code) {
+            $field .= ' selected="selected"';
+        }
+
+        $field .= '>' . tep_output_string($algo) . '</option>';
+    }
+
+    $field .= '</select>';
+
+    return $field;
+}
+
 function payzen_cfg_draw_pull_down_validation_modes($value='', $name)
 {
     $name = 'configuration[' . tep_output_string($name) . ']';
@@ -231,7 +269,7 @@ function payzen_cfg_draw_pull_down_langs($value='', $name)
     if (empty($value) && isset($GLOBALS[$name])) $value = stripslashes($GLOBALS[$name]);
 
     $field = '<select name="' . $name . '">';
-    foreach ($payzen_supported_languages as $key => $label) {
+    foreach (array_keys($payzen_supported_languages) as $key) {
         $field .= '<option value="' . $key . '"';
         if ($value == $key) {
             $field .= ' selected="selected"';
@@ -255,7 +293,7 @@ function payzen_cfg_draw_pull_down_multi_langs($value='', $name)
     $langs = empty($value) ? array() : explode(';', $value);
 
     $field = '<select name="' . tep_output_string($name) . '" multiple="multiple" onChange="JavaScript:payzenProcessLangs()">';
-    foreach ($payzen_supported_languages as $key => $label) {
+    foreach (array_keys($payzen_supported_languages) as $key) {
         $field .= '<option value="' . $key . '"';
         if (in_array($key, $langs)) {
             $field .= ' selected="selected"';
