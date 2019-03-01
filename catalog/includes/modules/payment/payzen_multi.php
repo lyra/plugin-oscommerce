@@ -1,30 +1,14 @@
 <?php
 /**
- * PayZen V2-Payment Module version 1.3.0 for osCommerce 2.3.x. Support contact : support@payzen.eu.
+ * Copyright © Lyra Network.
+ * This file is part of PayZen plugin for osCommerce. See COPYING.md for license details.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- *
- * @category  Payment
- * @package   Payzen
- * @author    Lyra Network (http://www.lyra-network.com/)
- * @copyright 2014-2018 Lyra Network and contributors
- * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html  GNU General Public License (GPL v2)
+ * @author    Lyra Network (https://www.lyra-network.com/)
+ * @copyright Lyra Network
+ * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU General Public License (GPL v2)
  */
-
 /**
- * Main class implementing PayZen multiple payment module for osCommerce.
+ * Main class implementing multiple payment module for osCommerce.
  */
 require_once(DIR_FS_CATALOG . 'includes/modules/payment/payzen.php');
 
@@ -145,7 +129,7 @@ if ($payzen_plugin_features['multi']) {
 
             // set multi payment options
             $options = $this->get_available_options();
-            $option = $options[$_POST['payzen_option']];
+            $option = $options[tep_output_string($_POST['payzen_option'])];
 
             $first = (isset($option['first']) && $option['first']) ?
                 (int) (string) (($option['first'] / 100) * $data['amount']) /* amount is in cents*/ : null;

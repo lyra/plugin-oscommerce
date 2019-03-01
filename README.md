@@ -1,17 +1,17 @@
 # PayZen for osCommerce
 
-PayZen for osCommerce is an open source plugin that links e-commerce websites based on osCommerce to PayZen secured payment gateway developped by [Lyra Network](https://www.lyra-network.com/).
+PayZen for osCommerce is an open source plugin that links e-commerce websites based on osCommerce to PayZen secure payment gateway developed by [Lyra Network](https://www.lyra-network.com/).
 
-# Installation & Upgrade
+## Installation & Upgrade
 
-If you already installed an old version of the module, you must uninstall it before installing new version :
+If you already installed an old version of the module, you must uninstall it before installing new version:
 
 - Go to Modules > Payment menu in the osCommerce backend, click on "PayZen - Payment by credit card" entry than click on "Remove Module" button. 
 - Do the same thing with "PayZen - Payment in installments by credit card" if installed.
 
 **Do not forget to backup your module settings.**
 
-To install the new module version :
+To install the new module version:
 
 - Copy the catalog folder content to your osCommerce catalog folder.
 - Go to Modules > Payment menu in the osCommerce backend.
@@ -19,9 +19,9 @@ To install the new module version :
 - Click on "PayZen - Payment by credit card" (or "PayZen - Payment in installments by credit card") entry.
 - Click now on the "Install Module" button.
 
-# Configuration
+## Configuration
 
-Once the module is installed, to configure it : 
+Once the module is installed, to configure it: 
 
 - Select "PayZen - Payment by credit card" (or "PayZen - Payment in installments by credit card") entry on the modules list.
 - Click "Edit" button to enter your PayZen credentials.
