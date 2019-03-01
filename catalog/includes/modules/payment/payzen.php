@@ -1,33 +1,18 @@
 <?php
 /**
- * PayZen V2-Payment Module version 1.3.0 for osCommerce 2.3.x. Support contact : support@payzen.eu.
+ * Copyright © Lyra Network.
+ * This file is part of PayZen plugin for osCommerce. See COPYING.md for license details.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- *
- * @category  Payment
- * @package   Payzen
- * @author    Lyra Network (http://www.lyra-network.com/)
- * @copyright 2014-2018 Lyra Network and contributors
- * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html  GNU General Public License (GPL v2)
+ * @author    Lyra Network (https://www.lyra-network.com/)
+ * @copyright Lyra Network
+ * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU General Public License (GPL v2)
  */
 
-/* include PayZen API class */
+/* Include gateway API class. */
 require_once(DIR_FS_CATALOG . 'includes/classes/payzen_api.php');
 
 if (defined('DIR_FS_ADMIN')) {
-    /* include the admin configuration functions */
+    /* Include the admin configuration functions. */
     require_once(DIR_FS_ADMIN . 'includes/functions/payzen_output.php');
 }
 
@@ -40,43 +25,66 @@ $payzen_plugin_features = array(
     'shatwo' => true,
 
     'multi' => true,
-    'choozeo' => false,
+    'choozeo' => false
 );
 
-/* load module language file */
+/* Load module language file. */
 require_once(DIR_FS_CATALOG . "includes/languages/$language/modules/payment/payzen.php");
 
 /**
- * Main class implementing PayZen payment module for osCommerce.
+ * Main class implementing payment module for osCommerce.
  */
 class payzen
 {
+
+    private static $GATEWAY_CODE = 'PayZen';
+    private static $GATEWAY_NAME = 'PayZen';
+    private static $BACKOFFICE_NAME = 'PayZen';
+    private static $GATEWAY_URL = 'https://secure.payzen.eu/vads-payment/';
+    private static $SITE_ID = '12345678';
+    private static $KEY_TEST = '1111111111111111';
+    private static $KEY_PROD = '2222222222222222';
+    private static $CTX_MODE = 'TEST';
+    private static $SIGN_ALGO = 'SHA-256';
+    private static $LANGUAGE = 'fr';
+
+    private static $CMS_IDENTIFIER = 'osCommerce_2.3.x';
+    private static $SUPPORT_EMAIL = 'support@payzen.eu';
+    private static $PLUGIN_VERSION = '1.3.1';
+    private static $GATEWAY_VERSION = 'V2';
+
     var $prefix = 'MODULE_PAYMENT_PAYZEN_';
 
     /**
      * @var string
      */
     var $code;
+
     /**
      * @var string
      */
     var $title;
+
     /**
      * @var string
      */
     var $description;
+
     /**
      * @var boolean
      */
     var $enabled;
+
     /**
      * @var int
      */
     var $sort_order;
+
     /**
      * @var string
      */
     var $form_action_url;
+
     /**
      * @var int
      */
@@ -102,9 +110,9 @@ class payzen
 
         $this->description .= '<table class="infoBoxContent">';
         $this->description .= '<tr><td style="text-align: right;">' . MODULE_PAYMENT_PAYZEN_DEVELOPED_BY . '</td><td><a href="http://www.lyra-network.com/" target="_blank"><b>Lyra network</b></a></td></tr>';
-        $this->description .= '<tr><td style="text-align: right;">' . MODULE_PAYMENT_PAYZEN_CONTACT_EMAIL . '</td><td><a href="mailto:support@payzen.eu"><b>support@payzen.eu</b></a></td></tr>';
-        $this->description .= '<tr><td style="text-align: right;">' . MODULE_PAYMENT_PAYZEN_CONTRIB_VERSION . '</td><td><b>1.3.0</b></td></tr>';
-        $this->description .= '<tr><td style="text-align: right;">' . MODULE_PAYMENT_PAYZEN_GATEWAY_VERSION . '</td><td><b>V2</b></td></tr>';
+        $this->description .= '<tr><td style="text-align: right;">' . MODULE_PAYMENT_PAYZEN_CONTACT_EMAIL . '</td><td><a href="mailto:' . self::$SUPPORT_EMAIL . '"><b>' . self::$SUPPORT_EMAIL . '</b></a></td></tr>';
+        $this->description .= '<tr><td style="text-align: right;">' . MODULE_PAYMENT_PAYZEN_CONTRIB_VERSION . '</td><td><b>' . self::$PLUGIN_VERSION . '</b></td></tr>';
+        $this->description .= '<tr><td style="text-align: right;">' . MODULE_PAYMENT_PAYZEN_GATEWAY_VERSION . '</td><td><b>' . self::$GATEWAY_VERSION . '</b></td></tr>';
 
         $this->description .= '<tr style="height: 20px;" colspan="2"><td></td></tr>'; // separator
         $this->description .= '<tr>
@@ -290,7 +298,7 @@ class payzen
             // order info
             'amount' => $payzenCurrency->convertAmountToInteger($total),
             'order_id' => $this->_guess_order_id(),
-            'contrib' => 'osCommerce2.3.x_1.3.0/' . tep_get_version() . '/'. PHP_VERSION,
+            'contrib' => self::$CMS_IDENTIFIER . '_' . self::$PLUGIN_VERSION . '/' . tep_get_version() . '/'. PHP_VERSION,
             'order_info' => 'session_id=' . session_id(),
             'order_info2' => 'payment_method=' .$this->code,
 
@@ -357,7 +365,7 @@ class payzen
         // check authenticity
         if (! $payzen_response->isAuthentified()) {
             if ($fromServer) {
-                die($payzen_response->getOutputForPlatform('auth_fail'));
+                die($payzen_response->getOutputForGateway('auth_fail'));
             } else {
                 $messageStack->add_session('header', MODULE_PAYMENT_PAYZEN_TECHNICAL_ERROR, 'error');
 
@@ -377,7 +385,7 @@ class payzen
 
             if ($this->_is_order_paid()) {
                 if ($fromServer) {
-                    die ($payzen_response->getOutputForPlatform('payment_ok_already_done'));
+                    die ($payzen_response->getOutputForGateway('payment_ok_already_done'));
                 } else {
                     tep_redirect(tep_href_link(FILENAME_CHECKOUT_SUCCESS, '', 'SSL', true));
                     die();
@@ -400,9 +408,12 @@ class payzen
         } else {
             // payment process failed
             if ($fromServer) {
-                die($payzen_response->getOutputForPlatform('payment_ko'));
+                die($payzen_response->getOutputForGateway('payment_ko'));
             } else {
-                $messageStack->add_session('header', MODULE_PAYMENT_PAYZEN_PAYMENT_ERROR, 'error');
+                if (! $payzen_response->isCancelledPayment()) {
+                    $messageStack->add_session('header', MODULE_PAYMENT_PAYZEN_PAYMENT_ERROR, 'error');
+                }
+
                 tep_redirect(tep_href_link(FILENAME_CHECKOUT_PAYMENT, '', 'SSL'));
                 die();
             }
@@ -423,7 +434,7 @@ class payzen
         if ($fromServer) {
             $this->_clear_session_vars();
 
-            die ($payzen_response->getOutputForPlatform('payment_ok'));
+            die ($payzen_response->getOutputForGateway('payment_ok'));
         } else {
             // payment confirmed by client retun, show a warning if TEST mode
             if (constant($this->prefix . 'CTX_MODE') == 'TEST') {
@@ -518,20 +529,20 @@ class payzen
         $this->_install_query('ZONE', '0', 3, 'tep_cfg_pull_down_zone_classes(', 'tep_get_zone_class_title');
 
         // gateway access parameters
-        $this->_install_query('SITE_ID', '12345678', 10);
+        $this->_install_query('SITE_ID', self::$SITE_ID, 10);
 
         $params = 'array(\'PRODUCTION\')';
         if (! $payzen_plugin_features['qualif']) {
             $params = 'array(\'TEST\', \'PRODUCTION\')';
-            $this->_install_query('KEY_TEST', '1111111111111111', 11);
+            $this->_install_query('KEY_TEST', self::$KEY_TEST, 11);
         }
 
-        $this->_install_query('KEY_PROD', '2222222222222222', 12);
-        $this->_install_query('CTX_MODE', 'TEST', 13, "tep_cfg_select_option($params,");
-        $this->_install_query('SIGN_ALGO', 'SHA-256', 14, 'payzen_cfg_draw_pull_down_sign_algos(', 'payzen_get_sign_algo_title');
-        $this->_install_query('PLATFORM_URL', 'https://secure.payzen.eu/vads-payment/', 15);
+        $this->_install_query('KEY_PROD', self::$KEY_PROD, 12);
+        $this->_install_query('CTX_MODE', self::$CTX_MODE, 13, "tep_cfg_select_option($params,");
+        $this->_install_query('SIGN_ALGO', self::$SIGN_ALGO, 14, 'payzen_cfg_draw_pull_down_sign_algos(', 'payzen_get_sign_algo_title');
+        $this->_install_query('PLATFORM_URL', self::$GATEWAY_URL, 15);
 
-        $this->_install_query('LANGUAGE', 'fr', 21, 'payzen_cfg_draw_pull_down_langs(', 'payzen_get_lang_title');
+        $this->_install_query('LANGUAGE', self::$LANGUAGE, 21, 'payzen_cfg_draw_pull_down_langs(', 'payzen_get_lang_title');
         $this->_install_query('AVAILABLE_LANGUAGES', '', 22, 'payzen_cfg_draw_pull_down_multi_langs(', 'payzen_get_multi_lang_title');
         $this->_install_query('CAPTURE_DELAY', '', 23);
         $this->_install_query('3DS_MIN_AMOUNT', '', 26);
@@ -548,9 +559,9 @@ class payzen
         // gateway return parameters
         $this->_install_query('REDIRECT_ENABLED', '0', 40, 'payzen_cfg_draw_pull_down_bools(', 'payzen_get_bool_title');
         $this->_install_query('REDIRECT_SUCCESS_TIMEOUT', '5', 41);
-        $this->_install_query('REDIRECT_SUCCESS_MESSAGE', 'Redirection to shop in a few seconds...', 42);
+        $this->_install_query('REDIRECT_SUCCESS_MESSAGE', MODULE_PAYMENT_PAYZEN_REDIRECT_SUCCESS_MESSAGE, 42);
         $this->_install_query('REDIRECT_ERROR_TIMEOUT', '5', 43);
-        $this->_install_query('REDIRECT_ERROR_MESSAGE', 'Redirection to shop in a few seconds...', 44);
+        $this->_install_query('REDIRECT_ERROR_MESSAGE', MODULE_PAYMENT_PAYZEN_REDIRECT_ERROR_MESSAGE, 44);
         $this->_install_query('RETURN_MODE', 'GET', 45, "tep_cfg_select_option(array(\'GET\', \'POST\'), ");
         $this->_install_query('ORDER_STATUS', '0', 48, 'tep_cfg_pull_down_order_statuses(', 'tep_get_order_status_name');
     }

@@ -1,30 +1,15 @@
 <?php
 /**
- * PayZen V2-Payment Module version 1.3.0 for osCommerce 2.3.x. Support contact : support@payzen.eu.
+ * Copyright © Lyra Network.
+ * This file is part of PayZen plugin for osCommerce. See COPYING.md for license details.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- *
- * @category  Payment
- * @package   Payzen
- * @author    Lyra Network (http://www.lyra-network.com/)
- * @copyright 2014-2018 Lyra Network and contributors
- * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html  GNU General Public License (GPL v2)
+ * @author    Lyra Network (https://www.lyra-network.com/)
+ * @copyright Lyra Network
+ * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU General Public License (GPL v2)
  */
 
 /**
- * Main class implementing PayZen Choozeo payment module for osCommerce.
+ * Main class implementing Choozeo payment module for osCommerce.
  */
 require_once(DIR_FS_CATALOG . 'includes/modules/payment/payzen.php');
 
@@ -163,12 +148,12 @@ if ($payzen_plugin_features['choozeo']) {
                 $selection['fields'][] = array(
                     'title' => '',
                     'field' => '<input type="radio"
-                                       id="__payzen_choozeo_option_' . $code . '"
-                                       name="__payzen_choozeo_option"
+                                       id="payzen_choozeo_option_' . $code . '"
+                                       name="payzen_choozeo_option"
                                        value="' . $code . '"
                                        onclick="$(\'input[name=payment][value=payzen_choozeo]\').click();"
                                        style="vertical-align: middle; margin-top: 0;"' . $checked . '>
-                                <label for="__payzen_choozeo_option_' . $code . '">' . $option['label'] . '</label>'
+                                <label for="payzen_choozeo_option_' . $code . '">' . $option['label'] . '</label>'
                 );
             }
 
@@ -184,8 +169,7 @@ if ($payzen_plugin_features['choozeo']) {
             $data = $this->_build_request();
 
             // override with Choozeo payment card
-            $option = $_POST['__payzen_choozeo_option'];
-            $data['payment_cards'] = tep_output_string($option);
+            $data['payment_cards'] = tep_output_string($_POST['payzen_choozeo_option']);
 
             // by default osCommerce does not manage customer type
             $data['cust_status'] = 'PRIVATE';
