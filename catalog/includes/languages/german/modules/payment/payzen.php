@@ -10,7 +10,7 @@
 
 global $payzen_plugin_features;
 
-// administration interface - informations
+// Administration interface - informations.
 define('MODULE_PAYMENT_PAYZEN_MODULE_INFORMATION', "MODULINFORMATIONEN");
 define('MODULE_PAYMENT_PAYZEN_DEVELOPED_BY', "Entwickelt von: ");
 define('MODULE_PAYMENT_PAYZEN_CONTACT_EMAIL', "Kontakt: ");
@@ -19,7 +19,7 @@ define('MODULE_PAYMENT_PAYZEN_GATEWAY_VERSION', "Plattformversion: ");
 define('MODULE_PAYMENT_PAYZEN_IPN_URL_TITLE', "Benachrichtigung-URL");
 define('MODULE_PAYMENT_PAYZEN_IPN_URL_DESC', "URL, die Sie in Ihre PayZen Back Office kopieren sollen > Einstellung > Regeln der Benachrichtigungen.");
 
-// administration interface - module settings
+// Administration interface - module settings.
 define('MODULE_PAYMENT_PAYZEN_STATUS_TITLE', "Aktiviert");
 define('MODULE_PAYMENT_PAYZEN_STATUS_DESC', "Aktiviert / Deaktiviert dieses Zahlungsmodus.");
 define('MODULE_PAYMENT_PAYZEN_SORT_ORDER_TITLE', "Reihenfolge");
@@ -27,7 +27,7 @@ define('MODULE_PAYMENT_PAYZEN_SORT_ORDER_DESC', "In der Liste der Zahlungsmittel
 define('MODULE_PAYMENT_PAYZEN_ZONE_TITLE', "Zahlungsraum");
 define('MODULE_PAYMENT_PAYZEN_ZONE_DESC', "Ist ein Zahlungsraum ausgewählt, so wird diese Zahlungsart nur für diesen verfügbar sein.");
 
-// administration interface - gateway settings
+// Administration interface - gateway settings.
 define('MODULE_PAYMENT_PAYZEN_SITE_ID_TITLE', "Shop ID");
 define('MODULE_PAYMENT_PAYZEN_SITE_ID_DESC', "Die Kennung von PayZen bereitgestellt.");
 define('MODULE_PAYMENT_PAYZEN_KEY_TEST_TITLE', "Schlüssel im Testbetrieb");
@@ -41,7 +41,7 @@ define('MODULE_PAYMENT_PAYZEN_SIGN_ALGO_DESC', "Algorithmus zur Berechnung der Z
 define('MODULE_PAYMENT_PAYZEN_PLATFORM_URL_TITLE', "Plattform-URL");
 define('MODULE_PAYMENT_PAYZEN_PLATFORM_URL_DESC', "Link zur Bezahlungsplattform.");
 
-// administration interface - payment settings
+// Administration interface - payment settings.
 define('MODULE_PAYMENT_PAYZEN_LANGUAGE_TITLE', "Standardsprache");
 define('MODULE_PAYMENT_PAYZEN_LANGUAGE_DESC', "Wählen Sie bitte die Spracheinstellung der Zahlungsseiten aus.");
 define('MODULE_PAYMENT_PAYZEN_AVAILABLE_LANGUAGES_TITLE', "Verfügbare Sprachen");
@@ -55,13 +55,13 @@ define('MODULE_PAYMENT_PAYZEN_PAYMENT_CARDS_DESC', "Wählen Sie die zur Zahlung 
 define('MODULE_PAYMENT_PAYZEN_3DS_MIN_AMOUNT_TITLE', "3DS deaktivieren");
 define('MODULE_PAYMENT_PAYZEN_3DS_MIN_AMOUNT_DESC', "Betrag, unter dem 3DS deaktiviert wird. Muss für die Option Selektives 3DS freigeschaltet sein. Weitere Informationen finden Sie in der Moduldokumentation.");
 
-// administration interface - amount restrictions settings
+// Administration interface - amount restrictions settings.
 define('MODULE_PAYMENT_PAYZEN_MIN_AMOUNT_TITLE', "Mindestbetrag");
 define('MODULE_PAYMENT_PAYZEN_MIN_AMOUNT_DESC', "Mindestbetrag für die Nutzung dieser Zahlungsweise.");
 define('MODULE_PAYMENT_PAYZEN_MAX_AMOUNT_TITLE', "Höchstbetrag");
 define('MODULE_PAYMENT_PAYZEN_MAX_AMOUNT_DESC', "Höchstbetrag für die Nutzung dieser Zahlungsweise.");
 
-// administration interface - back to store settings
+// Administration interface - back to store settings.
 define('MODULE_PAYMENT_PAYZEN_REDIRECT_ENABLED_TITLE', "Automatische Weiterleitung");
 define('MODULE_PAYMENT_PAYZEN_REDIRECT_ENABLED_DESC', "Ist diese Einstellung aktiviert, wird der Kunde am Ende des Bezahlvorgangs automatisch auf Ihre Seite weitergeleitet.");
 define('MODULE_PAYMENT_PAYZEN_REDIRECT_SUCCESS_TIMEOUT_TITLE', "Zeitbeschränkung Weiterleitung im Erfolgsfall");
@@ -77,7 +77,7 @@ define('MODULE_PAYMENT_PAYZEN_RETURN_MODE_DESC', 'Methode, die zur Übermittlung
 define('MODULE_PAYMENT_PAYZEN_ORDER_STATUS_TITLE', "Bestellstatus");
 define('MODULE_PAYMENT_PAYZEN_ORDER_STATUS_DESC', "Status der Bestellungen bei erfolgreicher Zahlung");
 
-// administration interface - misc constants
+// Administration interface - misc constants.
 define('MODULE_PAYMENT_PAYZEN_VALUE_0', "Deaktiviert");
 define('MODULE_PAYMENT_PAYZEN_VALUE_1', "Aktiviert");
 
@@ -102,12 +102,12 @@ define('MODULE_PAYMENT_PAYZEN_LANGUAGE_TURKISH', "Türkisch");
 define('MODULE_PAYMENT_PAYZEN_REDIRECT_SUCCESS_MESSAGE', "Weiterleitung zum Shop in Kürze...");
 define('MODULE_PAYMENT_PAYZEN_REDIRECT_ERROR_MESSAGE', "Weiterleitung zum Shop in Kürze...");
 
-// catalog messages
+// Catalog messages.
 define('MODULE_PAYMENT_PAYZEN_TECHNICAL_ERROR', "Ein Fehler ist bei dem Zahlungsvorgang unterlaufen.");
 define('MODULE_PAYMENT_PAYZEN_PAYMENT_ERROR', "Ihre Zahlung wurde abgelehnt. Bitte führen Sie den Bestellvorgang erneut durch.");
 define('MODULE_PAYMENT_PAYZEN_CHECK_URL_WARN', "Die automatische Bestätigung hat nicht funktioniert. Haben Sie die Server URL im PayZen Back Office richtig eingestellt?");
 define('MODULE_PAYMENT_PAYZEN_CHECK_URL_WARN_DETAIL', "Um die Problematif zu verstehen, benutzen Sie bitte die Benutzerhilfe des Moduls:<br />&nbsp;&nbsp;&nbsp;- Kapitel « Aufmerksam lesen »<br />&nbsp;&nbsp;&nbsp;- Kapitel « Einstellung der Server URL ».");
 define('MODULE_PAYMENT_PAYZEN_GOING_INTO_PROD_INFO', "<b>UMSTELLUNG AUF PRODUKTIONSUMFELD:</b> Sie möchten wissen, wie Sie auf Produktionsumfeld umstellen können, bitte lesen Sie die Kapitel « Weiter zur Testphase » und « Verschieben des Shops in den Produktionsumfeld » in der Dokumentation des Moduls.");
 
-// single payment catalog messages
+// Single payment catalog messages.
 define('MODULE_PAYMENT_PAYZEN_STD_TITLE', "PayZen - Zahlung mit EC-/Kreditkarte");

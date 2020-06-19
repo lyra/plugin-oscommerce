@@ -1,3 +1,6 @@
+1.3.2, 2020-06-19:
+- Fix some plugin translations.
+
 1.3.1, 2019-02-28:
 - Added Spanish translations.
 - Improve plugin translations (rename certifcate to key, namely refer to Back Office, others fixes).

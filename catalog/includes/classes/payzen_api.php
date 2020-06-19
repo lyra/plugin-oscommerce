@@ -61,7 +61,7 @@ if (! class_exists('PayzenApi', false)) {
         }
 
         /**
-         * Returns an array of languages accepted by the PayZen payment platform.
+         * Returns an array of languages accepted by the payment gateway.
          *
          * @return array[string][string]
          */
@@ -102,7 +102,7 @@ if (! class_exists('PayzenApi', false)) {
         }
 
         /**
-         * Return the list of currencies recognized by the PayZen platform.
+         * Return the list of currencies recognized by the payment gateway.
          *
          * @return array[int][PayzenCurrency]
          */
@@ -117,7 +117,7 @@ if (! class_exists('PayzenApi', false)) {
                 array('SGD', '702', 2), array('ZAR', '710', 2), array('SEK', '752', 2), array('CHF', '756', 2),
                 array('THB', '764', 2), array('TND', '788', 3), array('GBP', '826', 2), array('USD', '840', 2),
                 array('TWD', '901', 2), array('TRY', '949', 2), array('EUR', '978', 2), array('PLN', '985', 2),
-                array('BRL', '986', 2)
+                array('BRL', '986', 2), array('ARS', '032', 2), array('COP', '170', 2), array('PEN', '604', 2)
             );
 
             $payzen_currencies = array();
@@ -205,7 +205,7 @@ if (! class_exists('PayzenApi', false)) {
         }
 
         /**
-         * Returns an array of card types accepted by the PayZen payment platform.
+         * Returns an array of card types accepted by the payment gateway.
          *
          * @return array[string][string]
          */
@@ -218,7 +218,7 @@ if (! class_exists('PayzenApi', false)) {
                 'ALINEA' => 'Carte enseigne Alinéa', 'ALINEA_CDX' => 'Carte cadeau Alinéa',
                 'ALINEA_CDX_SB' => 'Carte cadeau Alinéa - Sandbox', 'ALINEA_SB' => 'Carte enseigne Alinéa - Sandbox',
                 'ALIPAY' => 'Alipay', 'ALLOBEBE_CDX' => 'Carte cadeau AlloBébé', 'ALLOBEBE_CDX_SB' => 'Carte cadeau AlloBébé - Sandbox',
-                'AUCHAN' => 'Carte enseigne Auchan', 'AUCHAN_SB' => 'Carte enseigne Auchan - Sandbox', 'AURORE_MULTI' => 'Carte Aurore',
+                'AUCHAN' => 'Carte enseigne Auchan', 'AUCHAN_SB' => 'Carte enseigne Auchan - Sandbox', 'AURORE-MULTI' => 'Cpay Aurore',
                 'BANCONTACT' => 'Bancontact Mistercash', 'BIZZBEE_CDX' => 'Carte cadeau BizzBee',
                 'BIZZBEE_CDX_SB' => 'Carte cadeau BizzBee - Sandbox', 'BOULANGER' => 'Carte enseigne Boulanger',
                 'BOULANGER_SB' => 'Carte enseigne Boulanger - Sandbox', 'BRICE_CDX' => 'Carte cadeau Brice',
@@ -226,33 +226,80 @@ if (! class_exists('PayzenApi', false)) {
                 'CONECS' => 'Titre-Restaurant Dématérialisé Conecs', 'APETIZ' => 'Titre-Restaurant Dématérialisé Apetiz',
                 'CHQ_DEJ' => 'Titre-Restaurant Dématérialisé Chèque Déjeuner',
                 'SODEXO' => 'Titre-Restaurant Dématérialisé Sodexo', 'EDENRED' => 'Ticket Restaurant',
-                'DINERS' => 'Carte Diners Club', 'DISCOVER' => 'Carte Discover', 'E_CV' => 'e-Chèque-Vacances', 'ECCARD' => 'Euro-Cheque card',
+                'CORA_BLANCHE' => 'Cora blanche', 'CORA_PREM' => 'Cora Visa Premier', 'CORA_VISA' => 'Cora Visa',
+                'DINERS' => 'Diners', 'DISCOVER' => 'Discover', 'E_CV' => 'e-Chèque-Vacances', 'ECCARD' => 'Euro-Cheque card',
                 'EDENRED_EC' => 'Ticket Eco Chèque Edenred', 'EDENRED_TC' => 'Ticket Culture Edenred',
                 'EDENRED_TR' => 'Ticket Restaurant Edenred', 'ELV' => 'Prélèvement Bancaire Hobex',
-                'EPS' => 'EPS Online Überweisung', 'EPS_GIROPAY' => 'EPS Online Überweisung',
                 'FULLCB_3X' => 'Paiement en 3x sans frais par BNPP PF', 'FULLCB_4X' => 'Paiement en 4x sans frais par BNPP PF',
-                'GIROPAY' => 'Giropay', 'IDEAL' => 'iDEAL', 'ILLICADO' => 'Cartes Cadeau Illicado',
+                'GOOGLEPAY' => 'Google Pay', 'GIROPAY' => 'Giropay', 'IDEAL' => 'iDEAL', 'ILLICADO' => 'Cartes Cadeau Illicado',
                 'ILLICADO_SB' => 'Cartes Cadeau Illicado - Sandbox - Sandbox', 'JCB' => 'JCB',
-                'JOUECLUB_CDX' => 'Carte cadeau JouéClub', 'JOUECLUB_CDX_SB' => 'Carte cadeau JouéClub - Sandbox',
                 'KLARNA' => 'Klarna Internet Banking', 'LEROY-MERLIN' => 'Carte enseigne Leroy-Merlin',
                 'LEROY-MERLIN_SB' => 'Carte enseigne Leroy-Merlin - Sandbox', 'MASTERPASS' => 'MasterPass',
                 'MULTIBANCO' => 'Multibanco', 'NORAUTO' => 'Carte enseigne Norauto', 'NORAUTO_SB' => 'Carte enseigne Norauto - Sandbox',
-                'ONEY' => 'FacilyPay Oney', 'ONEY_SANDBOX' => 'FacilyPay Oney - Sandbox', 'PAYDIREKT' => 'PayDirekt',
-                'PAYLIB' => 'Wallet Paylib', 'PAYPAL' => 'PayPal', 'PAYPAL_SB' => 'PayPal - Sandbox',
-                'PAYSAFECARD' => 'Carte prépayée paysafecard', 'PICWIC' => 'Carte enseigne PicWic',
-                'PICWIC_SB' => 'Carte enseigne PicWic - Sandbox', 'POSTFINANCE' => 'PostFinance',
-                'POSTFINANCE_EFIN' => 'PostFinance E-finance', 'SCT' => 'Virement SEPA Credit Transfer',
-                'SDD' => 'Prélèvement SEPA Direct Debit', 'SOFICARTE' => 'Carte Soficarte',
-                'SOFORT_BANKING' => 'Sofort', 'TRUFFAUX_CDX' => 'Carte Cadeau Truffaut', 'UNION_PAY' => 'UnionPay',
+                'ONEY' => 'FacilyPay Oney', 'ONEY_SANDBOX' => 'FacilyPay Oney - Sandbox', 'ONEY_3X_4X' => 'Paiement en 3 ou 4 fois Oney',
+                'PAYDIREKT' => 'PayDirekt', 'PAYLIB' => 'Wallet Paylib', 'PAYPAL' => 'PayPal', 'PAYPAL_SB' => 'PayPal - Sandbox',
+                'POSTFINANCE' => 'PostFinance', 'POSTFINANCE_EFIN' => 'PostFinance E-finance', 'SCT' => 'Virement SEPA Credit Transfer',
+                'SDD' => 'Prélèvement SEPA Direct Debit', 'SOFICARTE' => 'Soficarte',
+                'SOFORT_BANKING' => 'Sofort', 'TRUFFAUT_CDX' => 'Carte Cadeau Truffaut', 'UNION_PAY' => 'UnionPay',
                 'VILLAVERDE' => 'Carte enseigne Villaverde', 'VILLAVERDE_SB' => 'Carte enseigne Villaverde - Sandbox',
-                'WECHAT' => 'WeChat Pay', 'MYBANK' => 'MyBank', 'PRZELEWY24' => 'Przelewy24'
+                'WECHAT' => 'WeChat Pay', 'MYBANK' => 'MyBank', 'PRZELEWY24' => 'Przelewy24',
+                'ONEY_ENSEIGNE' => 'Cartes enseignes Oney'
             );
         }
 
         /**
-         * Compute a PayZen signature. Parameters must be in UTF-8.
+         * Return the statuses list of finalized successful payments (authorized or captured).
+         * @return array
+         */
+        public static function getSuccessStatuses()
+        {
+            return array(
+                'AUTHORISED',
+                'AUTHORISED_TO_VALIDATE', // TODO is this a pending status?
+                'CAPTURED',
+                'ACCEPTED'
+            );
+        }
+
+        /**
+         * Return the statuses list of payments that are waiting confirmation (successful but
+         * the amount has not been transfered and is not yet guaranteed).
+         * @return array
+         */
+        public static function getPendingStatuses()
+        {
+            return array(
+                'INITIAL',
+                'WAITING_AUTHORISATION',
+                'WAITING_AUTHORISATION_TO_VALIDATE',
+                'UNDER_VERIFICATION',
+                'PRE_AUTHORISED',
+                'WAITING_FOR_PAYMENT'
+            );
+        }
+
+        /**
+         * Return the statuses list of payments interrupted by the buyer.
+         * @return array
+         */
+        public static function getCancelledStatuses()
+        {
+            return array('ABANDONED');
+        }
+
+        /**
+         * Return the statuses list of payments waiting manual validation from the gateway Back Office.
+         * @return array
+         */
+        public static function getToValidateStatuses()
+        {
+            return array('WAITING_AUTHORISATION_TO_VALIDATE', 'AUTHORISED_TO_VALIDATE');
+        }
+
+        /**
+         * Compute the signature. Parameters must be in UTF-8.
          *
-         * @param array[string][string] $parameters payment platform request/response parameters
+         * @param array[string][string] $parameters payment gateway request/response parameters
          * @param string $key shop certificate
          * @param string $algo signature algorithm
          * @param boolean $hashed set to false to get the unhashed signature
@@ -287,7 +334,7 @@ if (! class_exists('PayzenApi', false)) {
 
         /**
          * PHP is not yet a sufficiently advanced technology to be indistinguishable from magic...
-         * so don't use magic_quotes, they mess up with the platform response analysis.
+         * so don't use magic_quotes, they mess up with the gateway response analysis.
          *
          * @param array $potentially_quoted_data
          * @return mixed
