@@ -8,7 +8,7 @@
  * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU General Public License (GPL v2)
  */
 
-// administration interface - multi payment options
+// Administration interface - multi payment options.
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_TITLE', "Opciones de pago");
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_DESC', "Haga clic en el botón « Agregar » para configurar una o más opciones de pago. Consulte la documentación para más información. <b>No olvide hacer clic en el botón « Guardar » para guardar sus modificaciones.</b>");
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_LABEL', "Etiqueta");
@@ -17,11 +17,11 @@ define('MODULE_PAYMENT_PAYZEN_OPTIONS_MAX_AMOUNT', "Monto máximo");
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_CONTRACT', "Afiliación");
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_COUNT', "Conteo");
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_PERIOD', "Periodo");
-define('MODULE_PAYMENT_PAYZEN_OPTIONS_FIRST', "Primer pago");
+define('MODULE_PAYMENT_PAYZEN_OPTIONS_FIRST', "Primer vencimiento");
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_ADD', "Agregar");
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_DELETE', "Eliminar");
 
-// multi payment catalog messages
+// Multi payment catalog messages.
 define('MODULE_PAYMENT_PAYZEN_MULTI_TITLE', "PayZen - Pago con tarjeta de crédito en cuotas");
 define('MODULE_PAYMENT_PAYZEN_MULTI_SHORT_TITLE', "PayZen - Pago en cuotas");
 

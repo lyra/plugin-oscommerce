@@ -11,13 +11,11 @@
 /**
  * General functions to draw configuration settings.
  */
-
 global $payzen_supported_languages, $payzen_supported_cards;
 
 // Load gateway payment API.
 $payzen_supported_languages = PayzenApi::getSupportedLanguages();
 $payzen_supported_cards = PayzenApi::getSupportedCardTypes();
-
 
 function payzen_get_bool_title($value)
 {
@@ -132,45 +130,6 @@ function payzen_get_multi_options($value)
         $field .= '<td style="padding: 0px;">' . $option['first'] . '</td>';
         $field .= '</tr>';
     }
-    $field .= '</tbody></table>';
-
-    return $field;
-}
-
-function payzen_get_choozeo_options($value)
-{
-    if (! $value) {
-        return '';
-    }
-
-    $options = json_decode($value, true);
-    if (! is_array($options) || empty($options)) {
-        return '';
-    }
-
-    $field = '<table cellpadding="10" cellspacing="5" >';
-
-    $field .= '<thead><tr>';
-    $field .= '<th style="padding: 0px;">' . MODULE_PAYMENT_PAYZEN_OPTIONS_LABEL . '</th>';
-    $field .= '<th style="padding: 0px;">' . MODULE_PAYMENT_PAYZEN_OPTIONS_MIN_AMOUNT . '</th>';
-    $field .= '<th style="padding: 0px;">' . MODULE_PAYMENT_PAYZEN_OPTIONS_MAX_AMOUNT . '</th>';
-    $field .= '</tr></thead>';
-
-    $field .= '<tbody>';
-
-    $choozeo_options = array (
-        'EPNF_3X' => 'Choozeo 3x CB',
-        'EPNF_4X' => 'Choozeo 4x CB'
-    );
-
-    foreach ($choozeo_options as $code => $option) {
-        $field .= '<tr>';
-        $field .= '<td style="padding: 0px;">' . $option . '</td>';
-        $field .= '<td style="padding: 0px;">' . $options[$code]['min_amount'] . '</td>';
-        $field .= '<td style="padding: 0px;">' . $options[$code]['max_amount'] . '</td>';
-        $field .= '</tr>';
-    }
-
     $field .= '</tbody></table>';
 
     return $field;
@@ -390,7 +349,7 @@ function payzen_cfg_draw_table_multi_options($value='', $name)
                         payzenAddOption("' . $name . '");
                      });';
 
-    // add already inserted lines
+    // Add already inserted lines.
     if (! empty($options)) {
         foreach ($options as $code => $option) {
             $field .= "\n" . 'payzenAddOption("' . $name . '", "' . $code . '", ' . json_encode($option) . ');' . "\n";
@@ -412,7 +371,7 @@ function payzen_cfg_draw_table_multi_options($value='', $name)
             }
 
             if (! key && ! record) {
-                // new line, generate key and use empty record
+                // New line, generate key and use empty record.
                 key = new Date().getTime();
                 record = { label: "", min_amount: "", max_amount: "", contract: "", count: "", period: "", first: "" };
             }
@@ -449,54 +408,6 @@ JSCODE;
     return $field;
 }
 
-function payzen_cfg_draw_table_choozeo_options($value='', $name)
-{
-    $name = tep_output_string($name);
-
-    $fieldName = 'configuration[' . $name . ']';
-
-    if (empty($value) && isset($GLOBALS[$fieldName])) $value = stripslashes($GLOBALS[$fieldName]);
-
-    $value = empty($value) ? array() : json_decode($value, true);
-
-    $field = '<table id="' . $name . '_table" cellpadding="10" cellspacing="0" >';
-
-    $field .= '<thead><tr>';
-    $field .= '<th style="padding: 0px;" class="label">' . MODULE_PAYMENT_PAYZEN_OPTIONS_LABEL . '</th>';
-    $field .= '<th style="padding: 0px;" class="min_amount">' . MODULE_PAYMENT_PAYZEN_OPTIONS_MIN_AMOUNT . '</th>';
-    $field .= '<th style="padding: 0px;" class="max_amount">' . MODULE_PAYMENT_PAYZEN_OPTIONS_MAX_AMOUNT . '</th>';
-    $field .= '</tr></thead>';
-
-    $field .= '<tbody>';
-
-    $choozeo_options = array (
-        'EPNF_3X' => 'Choozeo 3x CB',
-        'EPNF_4X' => 'Choozeo 4x CB'
-    );
-
-    foreach ($choozeo_options as $code => $option) {
-        $field .= '<tr>';
-        $field .= '<td style="padding: 0px; width:150px;"><input name="' . $name . '[' . $code . '][label]" value="' . $option . '" type="text" readonly ></td>';
-        $field .= '<td style="padding: 0px; width:150px;"><input name="' . $name . '[' . $code . '][min_amount]" value="' . $value[$code]["min_amount"] . '" type="text"></td>';
-        $field .= '<td style="padding: 0px; width:150px;"><input name="' . $name . '[' . $code . '][max_amount]" value="' . $value[$code]["max_amount"] . '" type="text"></td>';
-        $field .= '</tr>';
-    }
-
-    $field .= '</tbody></table>';
-
-    $js_serialize = payzen_js_serialize($name);
-
-    $field .= <<<JSCODE
-    <script type="text/javascript">
-        $js_serialize
-    </script>
-JSCODE;
-
-    $field .= '<input type="hidden" name="' . tep_output_string($fieldName) . '" value="' . $value . '">';
-
-    return $field;
-}
-
 function payzen_js_serialize($name)
 {
     $fieldName = 'configuration[' . $name . ']';
@@ -504,15 +415,15 @@ function payzen_js_serialize($name)
     $js_code = <<<JSCODE
     var JSON = JSON || {};
 
-    // implement JSON.stringify serialization
+    // Implement JSON.stringify serialization.
     JSON.stringify || function(obj) {
         var t = typeof (obj);
         if (t != "object" || obj === null) {
-            // simple data type
+            // Simple data type.
             if (t == "string") obj = '"' + obj + '"';
             return String(obj);
         } else {
-            // recurse array or object
+            // Recurse array or object.
             var n, v, json = [], arr = (obj && obj.constructor == Array);
 
             for (n in obj) {
@@ -550,7 +461,7 @@ function payzen_js_serialize($name)
             var key = keys[0];
 
             if (keys.length == 1) {
-                // it's a leaf, let's set the value
+                // It's a leaf, let's set the value.
                 arr[key] = val;
             } else {
                 keys.shift();

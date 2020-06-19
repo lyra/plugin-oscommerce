@@ -11,7 +11,7 @@
 if (! class_exists('PayzenField', false)) {
 
     /**
-     * Class representing a form field to send to the payment platform.
+     * Class representing a form field to send to the payment gateway.
      */
     class PayzenField
     {
@@ -106,7 +106,7 @@ if (! class_exists('PayzenField', false)) {
         public function setValue($value)
         {
             $value = ($value === null) ? null : (string) $value;
-            // we save value even if invalid but we return "false" as warning
+            // We save value even if invalid but we return "false" as warning.
             $this->value = $value;
 
             return $this->isValid();

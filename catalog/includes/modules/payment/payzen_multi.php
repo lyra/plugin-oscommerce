@@ -17,7 +17,7 @@ global $payzen_plugin_features;
 if ($payzen_plugin_features['multi']) {
     global $language;
 
-    /* load module language file */
+    // Load module language file.
     require_once(DIR_FS_CATALOG . "includes/languages/$language/modules/payment/payzen_multi.php");
 
     class payzen_multi extends payzen
@@ -33,10 +33,10 @@ if ($payzen_plugin_features['multi']) {
 
             parent::payzen();
 
-            // initialize code
+            // Initialize code.
             $this->code = 'payzen_multi';
 
-            // initialize title
+            // Initialize title.
             $this->title = MODULE_PAYMENT_PAYZEN_MULTI_TITLE;
 
             if ($payzen_plugin_features['restrictmulti']) {
@@ -56,7 +56,7 @@ if ($payzen_plugin_features['multi']) {
                 return;
             }
 
-            // check multi payment options
+            // Check multi payment options.
             $options = $this->get_available_options();
             if (empty($options)) {
                 $this->enabled = false;
@@ -81,7 +81,7 @@ if ($payzen_plugin_features['multi']) {
 
                     if ((! $option['min_amount'] || $amount >= $option['min_amount'])
                         && (! $option['max_amount'] || $amount <= $option['max_amount'])) {
-                        // option will be available
+                        // Option will be available.
                         $availOptions[$code] = $option;
                     }
                 }
@@ -91,7 +91,7 @@ if ($payzen_plugin_features['multi']) {
         }
 
         /**
-         * Parameters for what the payment option will look like in the list
+         * Parameters for what the payment option will look like in the list.
          * @return array
          */
         function selection()
@@ -111,7 +111,7 @@ if ($payzen_plugin_features['multi']) {
 
                 $selection['fields'][] = array(
                     'title' => '',
-                    'field' => '<input type="radio" id="payzen_option_' . $code . '" name="payzen_option" value="'.$code.'" onclick="$(\'input[name=payment][value=payzen_multi]\').click();" style="vertical-align: middle; margin-top: 0;"' . $checked . '>' .
+                    'field' => '<input type="radio" id="payzen_option_' . $code . '" name="payzen_option" value="' . $code . '" onclick="$(\'input[name=payment][value=payzen_multi]\').click();" style="vertical-align: middle; margin-top: 0;"' . $checked . '>' .
                                '<label for="payzen_option_' . $code . '">' . $option['label'] . '</label>'
                 );
             }
@@ -120,40 +120,40 @@ if ($payzen_plugin_features['multi']) {
         }
 
         /**
-         * Prepare the form that will be sent to the payment gateway
+         * Prepare the form that will be sent to the payment gateway.
          * @return string
          */
         function process_button()
         {
             $data = $this->_build_request();
 
-            // set multi payment options
+            // Set multi payment options.
             $options = $this->get_available_options();
             $option = $options[tep_output_string($_POST['payzen_option'])];
 
             $first = (isset($option['first']) && $option['first']) ?
-                (int) (string) (($option['first'] / 100) * $data['amount']) /* amount is in cents*/ : null;
+                (int) (string) (($option['first'] / 100) * $data['amount']) /* Amount is in cents. */ : null;
 
-            // override cb contract
+            // Override cb contract.
             $data['contracts'] = $option['contract'] ? 'CB=' . $option['contract'] : null;
 
             require_once(DIR_FS_CATALOG . 'includes/classes/payzen_request.php');
             $request = new PayzenRequest(CHARSET);
 
             $request->setFromArray($data);
-            $request->setMultiPayment(null /* use already set amount */, $first, $option['count'], $option['period']);
+            $request->setMultiPayment(null /* Use already set amount. */, $first, $option['count'], $option['period']);
 
             return $request->getRequestHtmlFields();
         }
 
         /**
-         * Module install (register admin-managed parameters in database)
+         * Module install (register admin-managed parameters in database).
          */
         function install()
         {
             parent::install();
 
-            // multi-payment parameters
+            // Multi-payment parameters.
             $this->_install_query('OPTIONS', '', 35, 'payzen_cfg_draw_table_multi_options(', 'payzen_get_multi_options');
         }
 

@@ -11,15 +11,14 @@
 /**
  * This file is an access point to the payment gateway plugin to validate an order.
  */
-
 if (key_exists('vads_hash', $_POST) && isset($_POST['vads_hash']) && key_exists('vads_order_id', $_POST) && isset($_POST['vads_order_id'])) {
-    // restore session if this is an IPN call.
+    // Restore session if this is an IPN call.
 
     $osCsid = substr($_POST['vads_order_info'], strlen('session_id='));
     $_POST['osCsid'] = $osCsid;
     $_GET['osCsid'] = $osCsid;
 
-    // for cookie based sessions ...
+    // For cookie based sessions...
     $_COOKIE['osCsid'] = $osCsid;
     $_COOKIE['cookie_test'] = 'please_accept_for_session';
 
@@ -42,11 +41,6 @@ if (key_exists('vads_hash', $_POST) && isset($_POST['vads_hash']) && key_exists(
             $paymentObject = new payzen_multi();
             break;
 
-        case 'payzen_choozeo':
-            require_once(DIR_FS_CATALOG . 'includes/modules/payment/payzen_choozeo.php');
-            $paymentObject = new payzen_choozeo();
-            break;
-
         default:
             require_once(DIR_FS_CATALOG . "includes/languages/$language/modules/payment/payzen.php");
             $messageStack->add_session('header', MODULE_PAYMENT_PAYZEN_TECHNICAL_ERROR, 'error');
@@ -64,9 +58,9 @@ if (key_exists('vads_hash', $_POST) && isset($_POST['vads_hash']) && key_exists(
         constant($paymentObject->prefix . 'SIGN_ALGO')
     );
 
-    $from_server = $payzen_response->get('hash') != null;
+    $from_server = ($payzen_response->get('hash') != null);
 
-    // check authenticity
+    // Check authenticity.
     if (! $payzen_response->isAuthentified()) {
         $messageStack->add_session('header', MODULE_PAYMENT_PAYZEN_TECHNICAL_ERROR, 'error');
 
@@ -76,7 +70,7 @@ if (key_exists('vads_hash', $_POST) && isset($_POST['vads_hash']) && key_exists(
     if ($paymentObject->_is_order_paid()) {
         global $payzen_plugin_features;
 
-        // messages to display on payment result page
+        // Messages to display on payment result page.
         if ($payzen_plugin_features['prodfaq'] && (constant($paymentObject->prefix . 'CTX_MODE') == 'TEST')) {
             $messageStack->add_session('header', MODULE_PAYMENT_PAYZEN_GOING_INTO_PROD_INFO, 'success');
         }
