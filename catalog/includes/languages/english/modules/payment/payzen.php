@@ -52,8 +52,8 @@ define('MODULE_PAYMENT_PAYZEN_VALIDATION_MODE_TITLE', "Validation mode");
 define('MODULE_PAYMENT_PAYZEN_VALIDATION_MODE_DESC', "If manual is selected, you will have to confirm payments manually in your PayZen Back Office.");
 define('MODULE_PAYMENT_PAYZEN_PAYMENT_CARDS_TITLE', "Card Types");
 define('MODULE_PAYMENT_PAYZEN_PAYMENT_CARDS_DESC', "The card type(s) that can be used for the payment. Select none to use gateway configuration.");
-define('MODULE_PAYMENT_PAYZEN_3DS_MIN_AMOUNT_TITLE', "Disable 3DS");
-define('MODULE_PAYMENT_PAYZEN_3DS_MIN_AMOUNT_DESC', "Amount below which 3DS will be disabled. Needs subscription to selective 3DS option. For more information, refer to the module documentation.");
+define('MODULE_PAYMENT_PAYZEN_3DS_MIN_AMOUNT_TITLE', "Manage 3DS");
+define('MODULE_PAYMENT_PAYZEN_3DS_MIN_AMOUNT_DESC', "Amount below which customer could be exempt from strong authentication. Needs subscription to «Selective 3DS1» or «Frictionless 3DS2» options. For more information, refer to the module documentation.");
 
 // Administration interface - amount restrictions settings.
 define('MODULE_PAYMENT_PAYZEN_MIN_AMOUNT_TITLE', "Minimum amount");

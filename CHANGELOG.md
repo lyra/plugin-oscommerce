@@ -1,3 +1,10 @@
+1.3.3, 2021-06-28:
+- Do not use vads\_order\_info, use vads\_ext\_info\_* instead.
+- Send the relevant part of the current PHP version in vads\_contrib field.
+- Improve support e-mail display.
+- Improve payment in installments options display on osCommerce backend.
+- Update 3DS management option description.
+
 1.3.2, 2020-06-19:
 - Fix some plugin translations.
 

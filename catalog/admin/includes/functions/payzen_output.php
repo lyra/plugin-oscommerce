@@ -107,27 +107,27 @@ function payzen_get_multi_options($value)
         return '';
     }
 
-    $field = '<table cellpadding="10" cellspacing="5" >';
+    $field = '<table>';
     $field .= '<thead><tr>';
-    $field .= '<th style="padding: 0px;">' . MODULE_PAYMENT_PAYZEN_OPTIONS_LABEL . '</th>';
-    $field .= '<th style="padding: 0px;">' . MODULE_PAYMENT_PAYZEN_OPTIONS_MIN_AMOUNT . '</th>';
-    $field .= '<th style="padding: 0px;">' . MODULE_PAYMENT_PAYZEN_OPTIONS_MAX_AMOUNT . '</th>';
-    $field .= '<th style="padding: 0px;">' . MODULE_PAYMENT_PAYZEN_OPTIONS_CONTRACT . '</th>';
-    $field .= '<th style="padding: 0px;">' . MODULE_PAYMENT_PAYZEN_OPTIONS_COUNT . '</th>';
-    $field .= '<th style="padding: 0px;">' . MODULE_PAYMENT_PAYZEN_OPTIONS_PERIOD . '</th>';
-    $field .= '<th style="padding: 0px;">' . MODULE_PAYMENT_PAYZEN_OPTIONS_FIRST . '</th>';
+    $field .= '<th style="padding: 2px;">' . MODULE_PAYMENT_PAYZEN_OPTIONS_LABEL . '</th>';
+    $field .= '<th style="padding: 2px;">' . MODULE_PAYMENT_PAYZEN_OPTIONS_MIN_AMOUNT . '</th>';
+    $field .= '<th style="padding: 2px;">' . MODULE_PAYMENT_PAYZEN_OPTIONS_MAX_AMOUNT . '</th>';
+    $field .= '<th style="padding: 2px;">' . MODULE_PAYMENT_PAYZEN_OPTIONS_CONTRACT . '</th>';
+    $field .= '<th style="padding: 2px;">' . MODULE_PAYMENT_PAYZEN_OPTIONS_COUNT . '</th>';
+    $field .= '<th style="padding: 2px;">' . MODULE_PAYMENT_PAYZEN_OPTIONS_PERIOD . '</th>';
+    $field .= '<th style="padding: 2px;">' . MODULE_PAYMENT_PAYZEN_OPTIONS_FIRST . '</th>';
     $field .= '</tr></thead>';
 
     $field .= '<tbody>';
     foreach ($options as $option) {
         $field .= '<tr>';
-        $field .= '<td style="padding: 0px;">' . $option['label'] . '</td>';
-        $field .= '<td style="padding: 0px;">' . $option['min_amount'] . '</td>';
-        $field .= '<td style="padding: 0px;">' . $option['max_amount'] . '</td>';
-        $field .= '<td style="padding: 0px;">' . $option['contract'] . '</td>';
-        $field .= '<td style="padding: 0px;">' . $option['count'] . '</td>';
-        $field .= '<td style="padding: 0px;">' . $option['period'] . '</td>';
-        $field .= '<td style="padding: 0px;">' . $option['first'] . '</td>';
+        $field .= '<td style="padding: 2px;">' . $option['label'] . '</td>';
+        $field .= '<td style="padding: 2px;">' . $option['min_amount'] . '</td>';
+        $field .= '<td style="padding: 2px;">' . $option['max_amount'] . '</td>';
+        $field .= '<td style="padding: 2px;">' . $option['contract'] . '</td>';
+        $field .= '<td style="padding: 2px;">' . $option['count'] . '</td>';
+        $field .= '<td style="padding: 2px;">' . $option['period'] . '</td>';
+        $field .= '<td style="padding: 2px;">' . $option['first'] . '</td>';
         $field .= '</tr>';
     }
     $field .= '</tbody></table>';
@@ -323,25 +323,27 @@ function payzen_cfg_draw_table_multi_options($value='', $name)
     $options = empty($value) ? array() : json_decode($value, true);
 
     $field = '<input id="' . $name . '_btn" class="' . $name . '_btn"' . (! empty($options) ? ' style="display: none;"' : '') . ' type="button" value="' . MODULE_PAYMENT_PAYZEN_OPTIONS_ADD . '" />';
-    $field .= '<table id="' . $name . '_table"' . (empty($options) ? ' style="display: none;"' : '') . ' cellpadding="10" cellspacing="0" >';
+    $field .= '<br /><div id="' . $name . '_table"' . (empty($options) ? ' style="display: none; overflow-x: scroll;"' : ' style="overflow-x: scroll;"') . '>';
+    $field .= '<div style="width: 200px;">';
+    $field .= '<table>';
 
     $field .= '<thead><tr>';
-    $field .= '<th style="padding: 0px;" class="label">' . MODULE_PAYMENT_PAYZEN_OPTIONS_LABEL . '</th>';
-    $field .= '<th style="padding: 0px;" class="min_amount">' . MODULE_PAYMENT_PAYZEN_OPTIONS_MIN_AMOUNT . '</th>';
-    $field .= '<th style="padding: 0px;" class="max_amount">' . MODULE_PAYMENT_PAYZEN_OPTIONS_MAX_AMOUNT . '</th>';
-    $field .= '<th style="padding: 0px;" class="contract">' . MODULE_PAYMENT_PAYZEN_OPTIONS_CONTRACT . '</th>';
-    $field .= '<th style="padding: 0px;" class="count">' . MODULE_PAYMENT_PAYZEN_OPTIONS_COUNT . '</th>';
-    $field .= '<th style="padding: 0px;" class="period">' . MODULE_PAYMENT_PAYZEN_OPTIONS_PERIOD . '</th>';
-    $field .= '<th style="padding: 0px;" class="first">' . MODULE_PAYMENT_PAYZEN_OPTIONS_FIRST . '</th>';
-    $field .= '<th style="padding: 0px;"></th>';
+    $field .= '<th style="padding: 2px;" class="label">' . MODULE_PAYMENT_PAYZEN_OPTIONS_LABEL . '</th>';
+    $field .= '<th style="padding: 2px;" class="min_amount">' . MODULE_PAYMENT_PAYZEN_OPTIONS_MIN_AMOUNT . '</th>';
+    $field .= '<th style="padding: 2px;" class="max_amount">' . MODULE_PAYMENT_PAYZEN_OPTIONS_MAX_AMOUNT . '</th>';
+    $field .= '<th style="padding: 2px;" class="contract">' . MODULE_PAYMENT_PAYZEN_OPTIONS_CONTRACT . '</th>';
+    $field .= '<th style="padding: 2px;" class="count">' . MODULE_PAYMENT_PAYZEN_OPTIONS_COUNT . '</th>';
+    $field .= '<th style="padding: 2px;" class="period">' . MODULE_PAYMENT_PAYZEN_OPTIONS_PERIOD . '</th>';
+    $field .= '<th style="padding: 2px;" class="first">' . MODULE_PAYMENT_PAYZEN_OPTIONS_FIRST . '</th>';
+    $field .= '<th style="padding: 2px;"></th>';
     $field .= '</tr></thead>';
 
     $field .= '<tbody>';
     $field .= '<tr id="' . $name . '_add">
                 <td colspan="7"></td>
-                <td style="padding: 0px;"><input class="' . $name . '_btn" type="button" value="' . MODULE_PAYMENT_PAYZEN_OPTIONS_ADD . '" /></td>
+                <td style="padding: 2px;"><input class="' . $name . '_btn" type="button" value="' . MODULE_PAYMENT_PAYZEN_OPTIONS_ADD . '" /></td>
                </tr>';
-    $field .= '</tbody></table>';
+    $field .= '</tbody></table></div></div>';
 
     $field .= "\n" . '<script type="text/javascript">';
 
@@ -379,14 +381,14 @@ function payzen_cfg_draw_table_multi_options($value='', $name)
             var inputPrefix = name + '[' + key + ']';
 
             var optionLine = '<tr id="' + name + '_line_' + key + '">';
-            optionLine += '<td style="padding: 0px;"><input style="width: 150px;" name="' + inputPrefix + '[label]" type="text" value="' + record['label'] + '" /></td>';
-            optionLine += '<td style="padding: 0px;"><input style="width: 75px;" name="' + inputPrefix + '[min_amount]" type="text" value="' + record['min_amount'] + '" /></td>';
-            optionLine += '<td style="padding: 0px;"><input style="width: 75px;" name="' + inputPrefix + '[max_amount]" type="text" value="' + record['max_amount'] + '" /></td>';
-            optionLine += '<td style="padding: 0px;"><input style="width: 65px;" name="' + inputPrefix + '[contract]" type="text" value="' + record['contract'] + '" /></td>';
-            optionLine += '<td style="padding: 0px;"><input style="width: 65px;" name="' + inputPrefix + '[count]" type="text" value="' + record['count'] + '" /></td>';
-            optionLine += '<td style="padding: 0px;"><input style="width: 65px;" name="' + inputPrefix + '[period]" type="text" value="' + record['period'] + '" /></td>';
-            optionLine += '<td style="padding: 0px;"><input style="width: 75px;" name="' + inputPrefix + '[first]" type="text" value="' + record['first'] + '" /></td>';
-            optionLine += '<td style="padding: 0px;"><input type="button" value="$deleteTxt" onclick="javascript: payzenDeleteOption(\'' + name + '\', \'' + key + '\');" /></td>';
+            optionLine += '<td style="padding: 2px;"><input style="width: 150px;" name="' + inputPrefix + '[label]" type="text" value="' + record['label'] + '" /></td>';
+            optionLine += '<td style="padding: 2px;"><input style="width: 75px;" name="' + inputPrefix + '[min_amount]" type="text" value="' + record['min_amount'] + '" /></td>';
+            optionLine += '<td style="padding: 2px;"><input style="width: 75px;" name="' + inputPrefix + '[max_amount]" type="text" value="' + record['max_amount'] + '" /></td>';
+            optionLine += '<td style="padding: 2px;"><input style="width: 65px;" name="' + inputPrefix + '[contract]" type="text" value="' + record['contract'] + '" /></td>';
+            optionLine += '<td style="padding: 2px;"><input style="width: 65px;" name="' + inputPrefix + '[count]" type="text" value="' + record['count'] + '" /></td>';
+            optionLine += '<td style="padding: 2px;"><input style="width: 65px;" name="' + inputPrefix + '[period]" type="text" value="' + record['period'] + '" /></td>';
+            optionLine += '<td style="padding: 2px;"><input style="width: 75px;" name="' + inputPrefix + '[first]" type="text" value="' + record['first'] + '" /></td>';
+            optionLine += '<td style="padding: 2px;"><input type="button" value="$deleteTxt" onclick="javascript: payzenDeleteOption(\'' + name + '\', \'' + key + '\');" /></td>';
             optionLine += '</tr>';
 
             jQuery(optionLine).insertBefore('#' + name + '_add');
