@@ -141,6 +141,13 @@ if ($payzen_plugin_features['multi']) {
             $request = new PayzenRequest(CHARSET);
 
             $request->setFromArray($data);
+
+            // To recover order session.
+            $request->addExtInfo('session_id', session_id());
+
+            // To recover order payment method.
+            $request->addExtInfo('payment_method', $this->code);
+
             $request->setMultiPayment(null /* Use already set amount. */, $first, $option['count'], $option['period']);
 
             return $request->getRequestHtmlFields();

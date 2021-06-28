@@ -48,7 +48,7 @@ class payzen
 
     private static $CMS_IDENTIFIER = 'osCommerce_2.3.x';
     private static $SUPPORT_EMAIL = 'support@payzen.eu';
-    private static $PLUGIN_VERSION = '1.3.2';
+    private static $PLUGIN_VERSION = '1.3.3';
     private static $GATEWAY_VERSION = 'V2';
 
     var $prefix = 'MODULE_PAYMENT_PAYZEN_';
@@ -108,7 +108,7 @@ class payzen
 
         $this->description .= '<table class="infoBoxContent">';
         $this->description .= '<tr><td style="text-align: right;">' . MODULE_PAYMENT_PAYZEN_DEVELOPED_BY . '</td><td><a href="http://www.lyra-network.com/" target="_blank"><b>Lyra network</b></a></td></tr>';
-        $this->description .= '<tr><td style="text-align: right;">' . MODULE_PAYMENT_PAYZEN_CONTACT_EMAIL . '</td><td><a href="mailto:' . self::$SUPPORT_EMAIL . '"><b>' . self::$SUPPORT_EMAIL . '</b></a></td></tr>';
+        $this->description .= '<tr><td style="text-align: right;">' . MODULE_PAYMENT_PAYZEN_CONTACT_EMAIL . '</td><td>' . PayzenApi::formatSupportEmails(self::$SUPPORT_EMAIL) . '</td></tr>';
         $this->description .= '<tr><td style="text-align: right;">' . MODULE_PAYMENT_PAYZEN_CONTRIB_VERSION . '</td><td><b>' . self::$PLUGIN_VERSION . '</b></td></tr>';
         $this->description .= '<tr><td style="text-align: right;">' . MODULE_PAYMENT_PAYZEN_GATEWAY_VERSION . '</td><td><b>' . self::$GATEWAY_VERSION . '</b></td></tr>';
 
@@ -239,6 +239,12 @@ class payzen
 
         $request->setFromArray($this->_build_request());
 
+        // To recover order session.
+        $request->addExtInfo('session_id', session_id());
+
+        // To recover order payment method.
+        $request->addExtInfo('payment_method', $this->code);
+
         return $request->getRequestHtmlFields();
     }
 
@@ -291,9 +297,7 @@ class payzen
             // Order info.
             'amount' => $payzenCurrency->convertAmountToInteger($total),
             'order_id' => $this->_guess_order_id(),
-            'contrib' => self::$CMS_IDENTIFIER . '_' . self::$PLUGIN_VERSION . '/' . tep_get_version() . '/' . PHP_VERSION,
-            'order_info' => 'session_id=' . session_id(),
-            'order_info2' => 'payment_method=' . $this->code,
+            'contrib' => self::$CMS_IDENTIFIER . '_' . self::$PLUGIN_VERSION . '/' . tep_get_version() . '/' . PayzenApi::shortPhpVersion(),
 
             // Misc data.
             'currency' => $payzenCurrency->getNum(),

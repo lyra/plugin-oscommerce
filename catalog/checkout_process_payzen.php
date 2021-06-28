@@ -11,10 +11,11 @@
 /**
  * This file is an access point to the payment gateway plugin to validate an order.
  */
-if (key_exists('vads_hash', $_POST) && isset($_POST['vads_hash']) && key_exists('vads_order_id', $_POST) && isset($_POST['vads_order_id'])) {
+if (key_exists('vads_hash', $_POST) && isset($_POST['vads_hash']) && key_exists('vads_order_id', $_POST) && isset($_POST['vads_order_id'])
+    && key_exists('vads_ext_info_session_id', $_POST) && isset($_POST['vads_ext_info_session_id'])) {
     // Restore session if this is an IPN call.
 
-    $osCsid = substr($_POST['vads_order_info'], strlen('session_id='));
+    $osCsid = $_POST['vads_ext_info_session_id'];
     $_POST['osCsid'] = $osCsid;
     $_GET['osCsid'] = $osCsid;
 
@@ -28,7 +29,7 @@ if (key_exists('vads_hash', $_POST) && isset($_POST['vads_hash']) && key_exists(
 
     global $payzen_response, $language, $messageStack;
 
-    $paymentMethod = str_replace('payment_method=', '', $_REQUEST['vads_order_info2']);
+    $paymentMethod = $_REQUEST['vads_ext_info_payment_method'];
 
     switch ($paymentMethod) {
         case 'payzen':
