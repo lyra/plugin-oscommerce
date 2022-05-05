@@ -1,3 +1,6 @@
+1.3.4, 2022-05-05:
+- Update list of supported payment means.
+
 1.3.3, 2021-06-28:
 - Do not use vads\_order\_info, use vads\_ext\_info\_* instead.
 - Send the relevant part of the current PHP version in vads\_contrib field.
