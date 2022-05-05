@@ -48,7 +48,7 @@ class payzen
 
     private static $CMS_IDENTIFIER = 'osCommerce_2.3.x';
     private static $SUPPORT_EMAIL = 'support@payzen.eu';
-    private static $PLUGIN_VERSION = '1.3.3';
+    private static $PLUGIN_VERSION = '1.3.4';
     private static $GATEWAY_VERSION = 'V2';
 
     var $prefix = 'MODULE_PAYMENT_PAYZEN_';
