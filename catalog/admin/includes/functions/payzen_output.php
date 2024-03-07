@@ -8,14 +8,20 @@
  * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU General Public License (GPL v2)
  */
 
+// Load gateway payment API.
+use Lyranetwork\Payzen\Sdk\Form\Api as PayzenApi;
+
 /**
  * General functions to draw configuration settings.
  */
-global $payzen_supported_languages, $payzen_supported_cards;
+global $payzen_supported_languages, $payzen_supported_cards, $payzen_algos;
 
-// Load gateway payment API.
 $payzen_supported_languages = PayzenApi::getSupportedLanguages();
 $payzen_supported_cards = PayzenApi::getSupportedCardTypes();
+$payzen_algos = array(
+    'SHA-1' => 'SHA-1',
+    'SHA-256' => 'HMAC-SHA-256'
+);
 
 function payzen_get_bool_title($value)
 {
@@ -23,19 +29,16 @@ function payzen_get_bool_title($value)
 
     if (defined($key)) {
         return constant($key);
-    } else {
-        return $value;
     }
+
+    return $value;
 }
 
 function payzen_get_sign_algo_title($value)
 {
-    $algos = array(
-        'SHA-1' => 'SHA-1',
-        'SHA-256' => 'HMAC-SHA-256'
-    );
+    global $payzen_algos;
 
-    return $algos[$value];
+    return $payzen_algos[$value];
 }
 
 function payzen_get_lang_title($value)
@@ -46,9 +49,9 @@ function payzen_get_lang_title($value)
 
     if (defined($key)) {
         return constant($key);
-    } else {
-        return $value;
     }
+
+    return $value;
 }
 
 function payzen_get_multi_lang_title($value)
@@ -62,9 +65,9 @@ function payzen_get_multi_lang_title($value)
         }
 
         return implode(', ', $result);
-    } else {
-        return '';
     }
+
+    return '';
 }
 
 function payzen_get_validation_mode_title($value)
@@ -73,9 +76,9 @@ function payzen_get_validation_mode_title($value)
 
     if (defined($key)) {
         return constant($key);
-    } else {
-        return MODULE_PAYMENT_PAYZEN_VALIDATION_DEFAULT;
     }
+
+    return MODULE_PAYMENT_PAYZEN_VALIDATION_DEFAULT;
 }
 
 function payzen_get_card_title($value)
@@ -91,9 +94,9 @@ function payzen_get_card_title($value)
         }
 
         return implode(', ', $result);
-    } else {
-        return '';
     }
+
+    return '';
 }
 
 function payzen_get_multi_options($value)
@@ -130,6 +133,7 @@ function payzen_get_multi_options($value)
         $field .= '<td style="padding: 2px;">' . $option['first'] . '</td>';
         $field .= '</tr>';
     }
+
     $field .= '</tbody></table>';
 
     return $field;
@@ -138,7 +142,9 @@ function payzen_get_multi_options($value)
 function payzen_cfg_draw_pull_down_bools($value='', $name)
 {
     $name = 'configuration[' . tep_output_string($name) . ']';
-    if (empty($value) && isset($GLOBALS[$name])) $value = stripslashes($GLOBALS[$name]);
+    if (empty($value) && isset($GLOBALS[$name])) {
+        $value = stripslashes($GLOBALS[$name]);
+    }
 
     $bools = array('1', '0');
 
@@ -157,19 +163,16 @@ function payzen_cfg_draw_pull_down_bools($value='', $name)
 
 function payzen_cfg_draw_pull_down_sign_algos($value='', $name)
 {
+    global $payzen_algos;
+
     $name = 'configuration[' . tep_output_string($name) . ']';
 
     if (empty($value) && isset($GLOBALS[$name])) {
         $value = stripslashes($GLOBALS[$name]);
     }
 
-    $algos = array(
-        'SHA-1' => 'SHA-1',
-        'SHA-256' => 'HMAC-SHA-256'
-    );
-
     $field = '<select name="' . $name . '">';
-    foreach ($algos as $code => $algo) {
+    foreach ($payzen_algos as $code => $algo) {
         $field .= '<option value="' . $code . '"';
         if ($value == $code) {
             $field .= ' selected="selected"';
@@ -186,8 +189,10 @@ function payzen_cfg_draw_pull_down_sign_algos($value='', $name)
 function payzen_cfg_draw_pull_down_validation_modes($value='', $name)
 {
     $name = 'configuration[' . tep_output_string($name) . ']';
+    if (empty($value) && isset($GLOBALS[$name])) {
+        $value = stripslashes($GLOBALS[$name]);
+    }
 
-    if (empty($value) && isset($GLOBALS[$name])) $value = stripslashes($GLOBALS[$name]);
     $modes = array('', '0', '1');
 
     $field = '<select name="' . $name . '">';
@@ -210,7 +215,9 @@ function payzen_cfg_draw_pull_down_langs($value='', $name)
     global $payzen_supported_languages;
 
     $name = 'configuration[' . tep_output_string($name) . ']';
-    if (empty($value) && isset($GLOBALS[$name])) $value = stripslashes($GLOBALS[$name]);
+    if (empty($value) && isset($GLOBALS[$name])) {
+        $value = stripslashes($GLOBALS[$name]);
+    }
 
     $field = '<select name="' . $name . '">';
     foreach (array_keys($payzen_supported_languages) as $key) {
@@ -231,8 +238,10 @@ function payzen_cfg_draw_pull_down_multi_langs($value='', $name)
 {
     global $payzen_supported_languages;
 
-    $fieldName = 'configuration[' . tep_output_string($name) . ']';
-    if (empty($value) && isset($GLOBALS[$fieldName])) $value = stripslashes($GLOBALS[$fieldName]);
+    $field_name = 'configuration[' . tep_output_string($name) . ']';
+    if (empty($value) && isset($GLOBALS[$field_name])) {
+        $value = stripslashes($GLOBALS[$field_name]);
+    }
 
     $langs = empty($value) ? array() : explode(';', $value);
 
@@ -245,6 +254,7 @@ function payzen_cfg_draw_pull_down_multi_langs($value='', $name)
 
         $field .= '>' . tep_output_string(payzen_get_lang_title($key)) . '</option>';
     }
+
     $field .= '</select> <br />';
 
     $field .= <<<JSCODE
@@ -260,12 +270,12 @@ function payzen_cfg_draw_pull_down_multi_langs($value='', $name)
                 }
             }
 
-            document.forms['modules'].elements['$fieldName'].value = result;
+            document.forms['modules'].elements['$field_name'].value = result;
         }
     </script>
 JSCODE;
 
-    $field .= '<input type="hidden" name="' . tep_output_string($fieldName) . '" value="' . $value . '">';
+    $field .= '<input type="hidden" name="' . tep_output_string($field_name) . '" value="' . $value . '">';
 
     return $field;
 }
@@ -274,8 +284,10 @@ function payzen_cfg_draw_pull_down_cards($value='', $name)
 {
     global $payzen_supported_cards;
 
-    $fieldName = 'configuration[' . tep_output_string($name) . ']';
-    if (empty($value) && isset($GLOBALS[$fieldName])) $value = stripslashes($GLOBALS[$fieldName]);
+    $field_name = 'configuration[' . tep_output_string($name) . ']';
+    if (empty($value) && isset($GLOBALS[$field_name])) {
+        $value = stripslashes($GLOBALS[$field_name]);
+    }
 
     $cards = empty($value) ? array() : explode(';', $value);
 
@@ -288,10 +300,12 @@ function payzen_cfg_draw_pull_down_cards($value='', $name)
 
         $field .= '>' . tep_output_string($label) . '</option>';
     }
+
     $field .= '</select> <br />';
 
     $field .= <<<JSCODE
     <script type="text/javascript">
+        payzenProcessCardDataEntryMode();
         function payzenProcessCards() {
             var elt = document.forms['modules'].elements['$name'];
 
@@ -303,12 +317,12 @@ function payzen_cfg_draw_pull_down_cards($value='', $name)
                 }
             }
 
-            document.forms['modules'].elements['$fieldName'].value = result;
+            document.forms['modules'].elements['$field_name'].value = result;
         }
     </script>
 JSCODE;
 
-    $field .= '<input type="hidden" name="' . tep_output_string($fieldName) . '" value="' . $value . '">';
+    $field .= '<input type="hidden" name="' . tep_output_string($field_name) . '" value="' . $value . '">';
 
     return $field;
 }
@@ -317,8 +331,10 @@ function payzen_cfg_draw_table_multi_options($value='', $name)
 {
     $name = tep_output_string($name);
 
-    $fieldName = 'configuration[' . $name . ']';
-    if (empty($value) && isset($GLOBALS[$fieldName])) $value = stripslashes($GLOBALS[$fieldName]);
+    $field_name = 'configuration[' . $name . ']';
+    if (empty($value) && isset($GLOBALS[$field_name])) {
+        $value = stripslashes($GLOBALS[$field_name]);
+    }
 
     $options = empty($value) ? array() : json_decode($value, true);
 
@@ -358,8 +374,7 @@ function payzen_cfg_draw_table_multi_options($value='', $name)
         }
     }
 
-
-    $deleteTxt = MODULE_PAYMENT_PAYZEN_OPTIONS_DELETE;
+    $delete_txt = MODULE_PAYMENT_PAYZEN_OPTIONS_DELETE;
 
     $js_serialize = payzen_js_serialize($name);
 
@@ -388,7 +403,7 @@ function payzen_cfg_draw_table_multi_options($value='', $name)
             optionLine += '<td style="padding: 2px;"><input style="width: 65px;" name="' + inputPrefix + '[count]" type="text" value="' + record['count'] + '" /></td>';
             optionLine += '<td style="padding: 2px;"><input style="width: 65px;" name="' + inputPrefix + '[period]" type="text" value="' + record['period'] + '" /></td>';
             optionLine += '<td style="padding: 2px;"><input style="width: 75px;" name="' + inputPrefix + '[first]" type="text" value="' + record['first'] + '" /></td>';
-            optionLine += '<td style="padding: 2px;"><input type="button" value="$deleteTxt" onclick="javascript: payzenDeleteOption(\'' + name + '\', \'' + key + '\');" /></td>';
+            optionLine += '<td style="padding: 2px;"><input type="button" value="$delete_txt" onclick="javascript: payzenDeleteOption(\'' + name + '\', \'' + key + '\');" /></td>';
             optionLine += '</tr>';
 
             jQuery(optionLine).insertBefore('#' + name + '_add');
@@ -405,14 +420,14 @@ function payzen_cfg_draw_table_multi_options($value='', $name)
     </script>
 JSCODE;
 
-    $field .= '<input type="hidden" name="' . $fieldName . '" value="' . $value . '">';
+    $field .= '<input type="hidden" name="' . $field_name . '" value="' . $value . '">';
 
     return $field;
 }
 
 function payzen_js_serialize($name)
 {
-    $fieldName = 'configuration[' . $name . ']';
+    $field_name = 'configuration[' . $name . ']';
 
     $js_code = <<<JSCODE
     var JSON = JSON || {};
@@ -454,7 +469,7 @@ function payzen_js_serialize($name)
             options = payzenFillArray(options, keys, jQuery(this).val());
         });
 
-            document.forms['modules'].elements['$fieldName'].value = JSON.stringify(options);
+            document.forms['modules'].elements['$field_name'].value = JSON.stringify(options);
             return true;
     });
 
@@ -480,4 +495,113 @@ function payzen_js_serialize($name)
 JSCODE;
 
     return $js_code;
+}
+
+function payzen_tep_cfg_disabled_input($value='', $name)
+{
+    $name = 'configuration[' . tep_output_string($name) . ']';
+
+    return "<span id='" . $name . "'><b>" . $value . "</b></span>";
+}
+
+function payzen_tep_cfg_title_fields($value='', $name)
+{
+    return '';
+}
+
+function payzen_cfg_draw_pull_down_card_data_entry_mode($value='', $name)
+{
+    global $payzen_plugin_features;
+
+    $name = 'configuration[' . tep_output_string($name) . ']';
+
+    if (empty($value) && isset($GLOBALS[$name])) {
+        $value = stripslashes($GLOBALS[$name]);
+    }
+
+    $payzen_supported_card_data_entry_modes = ['0' => 'MODE_FORM'];
+    if ($payzen_plugin_features['smartform']) {
+        $payzen_supported_card_data_entry_modes['1'] = 'MODE_SMARTFORM';
+        $payzen_supported_card_data_entry_modes['2'] = 'MODE_SMARTFORM_EXT_WITH_LOGOS';
+        $payzen_supported_card_data_entry_modes['3'] = 'MODE_SMARTFORM_EXT_WITHOUT_LOGOS';
+    }
+
+    $field = '<select name="' . $name . '" onChange="JavaScript:payzenProcessCardDataEntryMode()">';
+    foreach ($payzen_supported_card_data_entry_modes as $mode) {
+        $field .= '<option value="' . $mode . '"';
+        if ($value == $mode) {
+            $field .= ' selected="selected"';
+        }
+
+        $field .= '>' . tep_output_string(payzen_get_card_data_entry_mode_title($mode)) . '</option>';
+    }
+
+    $field .= '</select><br />';
+
+    $field .= <<<JSCODE
+    <script type="text/javascript">
+        function payzenProcessCardDataEntryMode() {
+            const smartformModes = ['MODE_SMARTFORM', 'MODE_SMARTFORM_EXT_WITH_LOGOS', 'MODE_SMARTFORM_EXT_WITHOUT_LOGOS'];
+            const popin = $("input[name='configuration[MODULE_PAYMENT_PAYZEN_REST_POPIN_MODE]']")[0];
+            const theme = $("select[name='configuration[MODULE_PAYMENT_PAYZEN_REST_THEME]']")[0];
+            const compact = $("input[name='configuration[MODULE_PAYMENT_PAYZEN_REST_COMPACT_MODE]']")[0];
+            const threshold = $("input[name='configuration[MODULE_PAYMENT_PAYZEN_REST_THRESHOLD]']")[0];
+            const attempts = $("input[name='configuration[MODULE_PAYMENT_PAYZEN_REST_ATTEMPTS]']")[0];
+
+            if (smartformModes.includes($("select[name='configuration[MODULE_PAYMENT_PAYZEN_CARD_DATA_ENTRY_MODE]']")[0].value)) {
+                popin.disabled = false;
+                theme.disabled = false;
+                compact.disabled = false;
+                threshold.disabled = false;
+                attempts.disabled = false;
+            } else {
+                popin.disabled = true;
+                theme.disabled = true;
+                compact.disabled = true;
+                threshold.disabled = true;
+                attempts.disabled = true;
+            }
+        }
+    </script>
+JSCODE;
+
+    return $field;
+}
+
+function payzen_get_card_data_entry_mode_title($value)
+{
+    $key = 'MODULE_PAYMENT_PAYZEN_CARD_DATA_ENTRY_' . strtoupper($value);
+
+    if (defined($key)) {
+        return constant($key);
+    }
+
+    return $value;
+}
+
+function payzen_cfg_draw_pull_down_theme($value='', $name)
+{
+    $name = 'configuration[' . tep_output_string($name) . ']';
+
+    if (empty($value) && isset($GLOBALS[$name])) {
+        $value = stripslashes($GLOBALS[$name]);
+    }
+
+    $themes = [
+        'classic' => 'Classic',
+        'neon' => 'Neon'];
+
+    $field = '<select name="' . $name . '">';
+    foreach ($themes as $code => $theme) {
+        $field .= '<option value="' . $code . '"';
+        if ($value == $code) {
+            $field .= ' selected="selected"';
+        }
+
+        $field .= '>' . tep_output_string($theme) . '</option>';
+    }
+
+    $field .= '</select>';
+
+    return $field;
 }
