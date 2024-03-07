@@ -10,14 +10,13 @@
 
 global $payzen_plugin_features;
 
-// Administration interface - informations.
+// Administration interface - general information.
 define('MODULE_PAYMENT_PAYZEN_MODULE_INFORMATION', "INFORMACIÓN DEL MÓDULO");
 define('MODULE_PAYMENT_PAYZEN_DEVELOPED_BY', "Desarrollado por: ");
 define('MODULE_PAYMENT_PAYZEN_CONTACT_EMAIL', "Contáctenos: ");
 define('MODULE_PAYMENT_PAYZEN_CONTRIB_VERSION', "Versión del módulo: ");
 define('MODULE_PAYMENT_PAYZEN_GATEWAY_VERSION', "Versión del portal: ");
-define('MODULE_PAYMENT_PAYZEN_IPN_URL_TITLE', "URL de notificación de pago instantáneo: ");
-define('MODULE_PAYMENT_PAYZEN_IPN_URL_DESC', "URL a copiar en el Back Office PayZen > Configuración > Reglas de notificación.");
+define('MODULE_PAYMENT_PAYZEN_DOCUMENTATION_URL', "Haga clic para ver la documentación de la configuración del módulo: ");
 
 // Administration interface - module settings.
 define('MODULE_PAYMENT_PAYZEN_STATUS_TITLE', "Activación");
@@ -40,6 +39,37 @@ define('MODULE_PAYMENT_PAYZEN_SIGN_ALGO_TITLE', "Algoritmo de firma");
 define('MODULE_PAYMENT_PAYZEN_SIGN_ALGO_DESC', "Algoritmo usado para calcular la firma del formulario de pago. El algoritmo seleccionado debe ser el mismo que el configurado en el Back Office PayZen." . (! $payzen_plugin_features['shatwo'] ? "El algoritmo HMAC-SHA-256 no se debe activar si aún no está disponible el Back Office PayZen, la función estará disponible pronto." : ''));
 define('MODULE_PAYMENT_PAYZEN_PLATFORM_URL_TITLE', "URL de página de pago");
 define('MODULE_PAYMENT_PAYZEN_PLATFORM_URL_DESC', "Enlace a la página de pago.");
+define('MODULE_PAYMENT_PAYZEN_IPN_URL_TITLE', "URL de notificación de pago instantáneo");
+define('MODULE_PAYMENT_PAYZEN_IPN_URL_DESC', "URL a copiar en el Back Office PayZen > Configuración > Reglas de notificación. En modo multitienda, la URL de notificación es la misma para todas las tiendas.");
+
+// Administration interface - rest api keys.
+define('MODULE_PAYMENT_PAYZEN_REST_API_KEYS_TITLE', "CLAVES DE API REST");
+define('MODULE_PAYMENT_PAYZEN_REST_API_KEYS_DESC', "Las claves de API REST están disponibles en el Back Office PayZen (menú: Configuración > Tiendas > Claves de API REST).");
+define('MODULE_PAYMENT_PAYZEN_PRIV_TEST_KEY_TITLE', "Contraseña de test");
+define('MODULE_PAYMENT_PAYZEN_PRIV_PROD_KEY_TITLE', "Contraseña de producción");
+define('MODULE_PAYMENT_PAYZEN_REST_URL_TITLE', "URL del servidor API REST");
+define('MODULE_PAYMENT_PAYZEN_PUB_TEST_KEY_TITLE', "Clave pública de test");
+define('MODULE_PAYMENT_PAYZEN_PUB_PROD_KEY_TITLE', "Clave pública de production");
+define('MODULE_PAYMENT_PAYZEN_HMAC_TEST_KEY_TITLE', "Clave HMAC-SHA-256 de test");
+define('MODULE_PAYMENT_PAYZEN_HMAC_PROD_KEY_TITLE', "Clave HMAC-SHA-256 de producción");
+define('MODULE_PAYMENT_PAYZEN_REST_IPN_URL_TITLE', "URL de notificación de API REST");
+define('MODULE_PAYMENT_PAYZEN_REST_IPN_URL_DESC', "URL a copiar en el Back Office PayZen > Configuración > Reglas de notificación. En modo multitienda, la URL de notificación es la misma para todas las tiendas.");
+define('MODULE_PAYMENT_PAYZEN_STATIC_URL_TITLE', "URL del cliente JavaScript");
+
+// Administration interface - advanced options
+define('MODULE_PAYMENT_PAYZEN_ADVANCED_OPTIONS_TITLE', "OPCIONES AVANZADAS");
+define('MODULE_PAYMENT_PAYZEN_CARD_DATA_ENTRY_MODE_TITLE', "Modo de ingreso de datos de pago");
+define('MODULE_PAYMENT_PAYZEN_CARD_DATA_ENTRY_MODE_DESC', "Seleccione la forma en que se ingresarán los datos de pago. Atención: para usar el Smartform, debe asegurarse de estar suscrito a esta opción con PayZen.");
+define('MODULE_PAYMENT_PAYZEN_REST_POPIN_MODE_TITLE', "Mostrar en una ventana pop-in");
+define('MODULE_PAYMENT_PAYZEN_REST_POPIN_MODE_DESC', "Esta opción permite mostrar el Smartform en una ventana pop-in.");
+define('MODULE_PAYMENT_PAYZEN_REST_THEME_TITLE', "Tema");
+define('MODULE_PAYMENT_PAYZEN_REST_THEME_DESC', "Seleccione un tema para usar para mostrar el Smartform");
+define('MODULE_PAYMENT_PAYZEN_REST_COMPACT_MODE_TITLE', "Modo compacto");
+define('MODULE_PAYMENT_PAYZEN_REST_COMPACT_MODE_DESC', "Esta opción muestra el Smartform en modo compacto.");
+define('MODULE_PAYMENT_PAYZEN_REST_THRESHOLD_TITLE', "Umbral de agrupación para medios de pago");
+define('MODULE_PAYMENT_PAYZEN_REST_THRESHOLD_DESC', "Número de medios de pago de los que se agruparán.");
+define('MODULE_PAYMENT_PAYZEN_REST_ATTEMPTS_TITLE', "Número de intentos de pago con tarjeta");
+define('MODULE_PAYMENT_PAYZEN_REST_ATTEMPTS_DESC', "Número máximo de intentos de pago con tarjeta después de un pago fallido (entre 0 y 2). Si está en blanco, el valor por defecto del portal es 2.");
 
 // Administration interface - payment settings.
 define('MODULE_PAYMENT_PAYZEN_LANGUAGE_TITLE', "Idioma predeterminado");
@@ -61,7 +91,7 @@ define('MODULE_PAYMENT_PAYZEN_MIN_AMOUNT_DESC', "Monto mínimo para activar este
 define('MODULE_PAYMENT_PAYZEN_MAX_AMOUNT_TITLE', "Monto máximo");
 define('MODULE_PAYMENT_PAYZEN_MAX_AMOUNT_DESC', "Monto máximo para activar este método de pago.");
 
-// Administration interface - back to store settings.
+// Administration interface - return to shop settings.
 define('MODULE_PAYMENT_PAYZEN_REDIRECT_ENABLED_TITLE', "Redirección automática");
 define('MODULE_PAYMENT_PAYZEN_REDIRECT_ENABLED_DESC', "Si está habilitada, el comprador es redirigido automáticamente a su sitio al final del pago.");
 define('MODULE_PAYMENT_PAYZEN_REDIRECT_SUCCESS_TIMEOUT_TITLE', "Tiempo de espera de la redirección en pago exitoso");
@@ -101,6 +131,11 @@ define('MODULE_PAYMENT_PAYZEN_LANGUAGE_TURKISH', "Turco");
 
 define('MODULE_PAYMENT_PAYZEN_REDIRECT_SUCCESS_MESSAGE', "Redirección a la tienda en unos momentos...");
 define('MODULE_PAYMENT_PAYZEN_REDIRECT_ERROR_MESSAGE', "Redirección a la tienda en unos momentos...");
+
+define('MODULE_PAYMENT_PAYZEN_CARD_DATA_ENTRY_MODE_FORM', "Adquisición de datos bancarios en el portal de pago");
+define('MODULE_PAYMENT_PAYZEN_CARD_DATA_ENTRY_MODE_SMARTFORM', "Smartform incorporado en el sitio web vendedor (API REST)");
+define('MODULE_PAYMENT_PAYZEN_CARD_DATA_ENTRY_MODE_SMARTFORM_EXT_WITH_LOGOS', "Smartform extendido incorporado en el sitio web vendedor com logotipos (API REST)");
+define('MODULE_PAYMENT_PAYZEN_CARD_DATA_ENTRY_MODE_SMARTFORM_EXT_WITHOUT_LOGOS', "Smartform extendido incorporado en el sitio web vendedor sem logotipos (API REST)");
 
 // Catalog messages.
 define('MODULE_PAYMENT_PAYZEN_TECHNICAL_ERROR', "Ocurrió un error durante el proceso de pago.");

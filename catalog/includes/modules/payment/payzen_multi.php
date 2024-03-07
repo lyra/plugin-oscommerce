@@ -7,10 +7,13 @@
  * @copyright Lyra Network
  * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU General Public License (GPL v2)
  */
+
 /**
  * Main class implementing multiple payment module for osCommerce.
  */
 require_once(DIR_FS_CATALOG . 'includes/modules/payment/payzen.php');
+
+use Lyranetwork\Payzen\Sdk\Form\Request as PayzenRequest;
 
 global $payzen_plugin_features;
 
@@ -33,15 +36,15 @@ if ($payzen_plugin_features['multi']) {
 
             parent::payzen();
 
-            // Initialize code.
+            // Initialize module code.
             $this->code = 'payzen_multi';
 
-            // Initialize title.
+            // Initialize module title.
             $this->title = MODULE_PAYMENT_PAYZEN_MULTI_TITLE;
 
             if ($payzen_plugin_features['restrictmulti']) {
-                $this->description = '<p style="background-color: #FFFFE0; border: 1px solid #E6DB55; font-size: 13px;  margin: 0 0 20px; padding: 10px;">' .
-                    MODULE_PAYMENT_PAYZEN_MULTI_WARNING . '</p>' . $this->description;
+                $this->description = '<p style="background-color: #FFFFE0; border: 1px solid #E6DB55; font-size: 13px;  margin: 0 0 20px; padding: 10px;">'
+                    . MODULE_PAYMENT_PAYZEN_MULTI_WARNING . '</p>' . $this->description;
             }
         }
 
@@ -56,7 +59,7 @@ if ($payzen_plugin_features['multi']) {
                 return;
             }
 
-            // Check multi payment options.
+            // Check payment in installments options.
             $options = $this->get_available_options();
             if (empty($options)) {
                 $this->enabled = false;
@@ -72,7 +75,7 @@ if ($payzen_plugin_features['multi']) {
             $options = MODULE_PAYMENT_PAYZEN_MULTI_OPTIONS ?
                 json_decode(MODULE_PAYMENT_PAYZEN_MULTI_OPTIONS, true) : array();
 
-            $availOptions = array();
+            $available_options = array();
             if (is_array($options) && ! empty($options)) {
                 foreach ($options as $code => $option) {
                     if (empty($option)) {
@@ -82,16 +85,17 @@ if ($payzen_plugin_features['multi']) {
                     if ((! $option['min_amount'] || $amount >= $option['min_amount'])
                         && (! $option['max_amount'] || $amount <= $option['max_amount'])) {
                         // Option will be available.
-                        $availOptions[$code] = $option;
+                        $available_options[$code] = $option;
                     }
                 }
             }
 
-            return $availOptions;
+            return $available_options;
         }
 
         /**
          * Parameters for what the payment option will look like in the list.
+         *
          * @return array
          */
         function selection()
@@ -121,32 +125,23 @@ if ($payzen_plugin_features['multi']) {
 
         /**
          * Prepare the form that will be sent to the payment gateway.
+         *
          * @return string
          */
         function process_button()
         {
-            $data = $this->_build_request();
+            $request = $this->_prepare_request();
 
-            // Set multi payment options.
+            // Set payment in installments options.
             $options = $this->get_available_options();
             $option = $options[tep_output_string($_POST['payzen_option'])];
 
             $first = (isset($option['first']) && $option['first']) ?
-                (int) (string) (($option['first'] / 100) * $data['amount']) /* Amount is in cents. */ : null;
+                (int) (string) (($option['first'] / 100) * $request->get('amount')) /* Amount is in cents. */ : null;
 
-            // Override cb contract.
-            $data['contracts'] = $option['contract'] ? 'CB=' . $option['contract'] : null;
-
-            require_once(DIR_FS_CATALOG . 'includes/classes/payzen_request.php');
-            $request = new PayzenRequest(CHARSET);
-
-            $request->setFromArray($data);
-
-            // To recover order session.
-            $request->addExtInfo('session_id', session_id());
-
-            // To recover order payment method.
-            $request->addExtInfo('payment_method', $this->code);
+            // Override CB contract.
+            $contracts = $option['contract'] ? 'CB=' . $option['contract'] : null;
+            $request->set('contracts', $contracts);
 
             $request->setMultiPayment(null /* Use already set amount. */, $first, $option['count'], $option['period']);
 
@@ -160,12 +155,13 @@ if ($payzen_plugin_features['multi']) {
         {
             parent::install();
 
-            // Multi-payment parameters.
+            // Payment in installments parameters.
             $this->_install_query('OPTIONS', '', 35, 'payzen_cfg_draw_table_multi_options(', 'payzen_get_multi_options');
         }
 
         /**
          * Returns the names of module's parameters.
+         *
          * @return array[int]string
          */
         function keys()
@@ -188,6 +184,7 @@ if ($payzen_plugin_features['multi']) {
             $keys[] = 'MODULE_PAYMENT_PAYZEN_MULTI_CTX_MODE';
             $keys[] = 'MODULE_PAYMENT_PAYZEN_MULTI_SIGN_ALGO';
             $keys[] = 'MODULE_PAYMENT_PAYZEN_MULTI_PLATFORM_URL';
+            $keys[] = 'MODULE_PAYMENT_PAYZEN_MULTI_IPN_URL';
 
             $keys[] = 'MODULE_PAYMENT_PAYZEN_MULTI_LANGUAGE';
             $keys[] = 'MODULE_PAYMENT_PAYZEN_MULTI_AVAILABLE_LANGUAGES';

@@ -8,7 +8,7 @@
  * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GNU General Public License (GPL v2)
  */
 
-// Administration interface - multi payment options.
+// Administration interface - payment in installments options.
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_TITLE', "Payment options");
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_DESC', "Click on « Add » to configure one or more payment options. Refer to documentation for more information. <b>Do not forget to click on « Save » to save your modifications.</b>");
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_LABEL', "Label");
@@ -21,7 +21,7 @@ define('MODULE_PAYMENT_PAYZEN_OPTIONS_FIRST', "1st installment");
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_ADD', "Add");
 define('MODULE_PAYMENT_PAYZEN_OPTIONS_DELETE', "Delete");
 
-// Multi payment catalog messages.
+// Payment in installments catalog messages.
 define('MODULE_PAYMENT_PAYZEN_MULTI_TITLE', "PayZen - Payment in installments by credit card");
 define('MODULE_PAYMENT_PAYZEN_MULTI_SHORT_TITLE', "PayZen - Payment in installments");
 

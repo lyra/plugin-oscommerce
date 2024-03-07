@@ -1,3 +1,9 @@
+1.4.0, 2024-03-07:
+- [smartform] Smartform integration.
+- Set return mode to POST by default.
+- Update list of supported payment means.
+- Update list of supported currencies.
+
 1.3.4, 2022-05-05:
 - Update list of supported payment means.
 
